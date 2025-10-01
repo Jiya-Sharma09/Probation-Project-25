@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter To-Do App',
+      debugShowCheckedModeBanner: false,
       // The theme sets the overall visual style of the app.
       theme: ThemeData(
         
