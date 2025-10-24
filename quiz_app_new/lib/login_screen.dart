@@ -71,15 +71,18 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
 
-              CircleAvatar(
-                backgroundColor: Color.fromARGB(151, 227, 97, 151),
-                child: Text('Quiziko'),
+              SizedBox(
+                height: 60,
+                child: Text('Quiziko', style: TextStyle(fontSize: 30, color: Color.fromARGB(255, 233, 78, 145)), ),
               ),
 
               SizedBox(
-                height: 20,
+                height: 10,
               ),
 
+            SizedBox(
+              width: 300,
+              child: 
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -87,11 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(255, 239, 53, 130),
-                      width: 10
+                      width: 5
                     )
                   ),
                   filled: true, 
-                  fillColor: Color.fromARGB(255, 243, 115, 168)),
+                  fillColor: Color.fromARGB(255, 245, 197, 217)),
                 validator: (value){
                   if(value == null || value.isEmpty){
                     return 'Please enter your password.';
@@ -101,24 +104,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 } ,
 
               ),
-
+            ),
 
             SizedBox(
                 height: 10,
               ),
 
+
+            SizedBox(
+              width:  300,
+              child: 
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: 'Email', 
+                  labelText: 'Password', 
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(255, 239, 53, 130),
-                      width: 10
+                      width: 5
                     )
                   ),
                   filled: true, 
-                  fillColor: Color.fromARGB(255, 243, 115, 168)
+                  fillColor: Color.fromARGB(255, 245, 197, 217)
 
                   ),
                 validator: (value){
@@ -131,14 +138,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 } ,
 
               ),
-
+            ),
               Container(
                 height: 10,
               ),
 
               _isLoading ?
-              ElevatedButton(onPressed: _login, child: Text('Login'))
-              : CircularProgressIndicator(),
+              CircularProgressIndicator()
+              : ElevatedButton(onPressed: _login, child: Text('Login')),
 
               SizedBox(
                 height: 20,

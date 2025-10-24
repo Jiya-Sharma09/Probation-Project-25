@@ -29,6 +29,7 @@ class _SplashScreenState extends State <SplashScreen>{
     return Scaffold(
       body: Center(
         child: CircleAvatar(
+          radius: 60,
           backgroundColor: Color.fromARGB(255, 241, 163, 197),
           child: Center(
             child: Text('Quiziko'),
