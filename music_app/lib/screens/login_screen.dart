@@ -1,75 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:music_app/screens/home_screen.dart';
-import 'dart:convert';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
-
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
-   
 }
 
-class _LoginScreenState extends State<LoginScreen>{
-  
-
-  Future<void> _loginWithGoogle(BuildContext context)async{
-    
-      try{
-
-          final urlForGoogleAuth = Uri.parse('');
-
-          final response = await http.get(urlForGoogleAuth);
-
-          if(response.statusCode == 200){
-            // yaha status code 200 hai that means successful !! yay !!
-
-            // response body will contain the token i need for my fluttter appppppppppppppppppppp
-
-            final jsonData = jsonDecode(response.body);
-            final tokenForAuth = jsonData['token'];
-            final storedPref = await SharedPreferences.getInstance();
-            await storedPref.setString('token', tokenForAuth);
-
-            Navigator.pushReplacement(
-              context, 
-              MaterialPageRoute(builder: (context)=> homeScreen())
-            );
-
-          }
-          else{
-
-
-
-          }
-      }catch (e){
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+class _LoginScreenState extends State<LoginScreen> {
+  Future<void> loginWithGoogle() async {
+    try {
+      // Step 1: Open your backend's Google login endpoint
+      final result = await FlutterWebAuth2.authenticate(
+        url: 'https://loginsignup-bzym.onrender.com/oauth2/authorization/google',
+        callbackUrlScheme: 'myapp', // must match backend redirect
       );
+
+      // Step 2: Extract JWT token from redirect URL
+      final token = Uri.parse(result).queryParameters['token'];
+
+      if (token != null) {
+        // Step 3: Save JWT locally for later API calls
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt', token);
+
+        // Step 4: Redirect to Home Page
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login failed: token missing.")),
+        );
       }
-
-     
+    } catch (e) {
+      debugPrint('Login error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text("LET'S GET YOU IN...", 
-            style: TextStyle(fontSize: 23, 
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 243, 185, 40)
-            ),
-            ),
-
-            ElevatedButton(onPressed:(){ _loginWithGoogle(context);}, child: Text('Login with Google !'))
-          ],
+      body: Center(
+        child: ElevatedButton(
+          onPressed: loginWithGoogle,
+          child: const Text("Login with Google"),
         ),
       ),
     );

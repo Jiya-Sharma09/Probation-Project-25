@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:music_app/models/song_model.dart';
 
 
 class ApiService {
+
+
+// all the following functions are written in accordance with the deezer api : 
+
 
   // to fetch songs form the external open database uisng api key
   // api service mein pehele we need an api we use convert
@@ -16,7 +21,8 @@ class ApiService {
   if(response.statusCode == 200){
     // response body : response.body will contain a list of maps each individual map contains a song
     final data = jsonDecode(response.body)['data'];
-    return data;
+    
+    return data.map((song)=>Song.fromJson(song)).toList();
   }
 
   else{
@@ -24,6 +30,8 @@ class ApiService {
   }
 
   }
+
+
 
 
   // now for fetchng top global songs for homescreen
@@ -35,7 +43,7 @@ class ApiService {
 
   if(response.statusCode == 200){
     final data = jsonDecode(response.body)['data'];
-    return data;
+    return data.map((song)=>Song.fromJson(song)).toList();
 
   }
 
@@ -57,7 +65,7 @@ class ApiService {
 
   if(response.statusCode == 200){
     final data = jsonDecode(response.body)['data'];
-    return data;
+    return data.map((song)=>Song.fromJson(song)).toList();
 
   }
 
@@ -66,5 +74,9 @@ class ApiService {
   }
 
   }
+
+  
+
+
 }
 
