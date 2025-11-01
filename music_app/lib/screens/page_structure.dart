@@ -44,34 +44,20 @@ class _PageState extends State<PageStruct> {
         type: BottomNavigationBarType.fixed, // keeps all icons visible
         currentIndex: selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: const Color.fromARGB(
-          255,
-          245,
-          95,
-          153,
-        ), // highlight color for selected tab
-        unselectedItemColor: Color.fromARGB(
-          255,
-          241,
-          180,
-          190,
-        ), // color for inactive tabs
+        selectedItemColor: Color.fromARGB(255, 144, 109, 2), // highlight color for selected tab
+        unselectedItemColor:  Color.fromARGB(255, 238, 195, 64), // color for inactive tabs
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
             label: "Library",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: "Cart",
-          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
 
       // backgroundColor: Colors.black12,
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 9, 9, 9),
 
 
     );

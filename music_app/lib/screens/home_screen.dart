@@ -12,27 +12,33 @@ class homeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.menu)),
-
-        title: Text('Geet', style: TextStyle(fontSize: 20)),
-
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.person))],
-
-        iconTheme: IconThemeData(color: Color.fromARGB(255, 238, 195, 64)),
-      ),
-
-      body: SingleChildScrollView(
+    return  SingleChildScrollView(
         child: Column(
           children: [
 
             // search bar (package from pub.dev): 
-            Padding(padding: EdgeInsetsGeometry.all(18)
-              child: SearchField(suggestions: suggestions),
-            )
+
+            Padding(padding: EdgeInsetsGeometry.all(18),
+              child: SearchField(suggestions: [
+                // ML *****
+
+                // examples by app developer : 
+                SearchFieldListItem('tears'),
+                SearchFieldListItem('hallucinate')
+              ] ),
+            ),
 
             // for top global charts :
+
+            SizedBox(
+              height: 10,
+            ),
+
+
+            Container(
+              height: 20,
+              child: Text('Top Global songs'),
+            ),
 
             FutureBuilder(
               future: ApiService().fetchTopGlobalSong(),
@@ -64,6 +70,21 @@ class homeScreen extends StatelessWidget {
 
             // for top indian songs : 
 
+            SizedBox(
+              height: 10,
+            ),
+            
+
+            Container(
+              height: 20,
+              child: Text('Top Indian songs'),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
+
+
             FutureBuilder(
               future: ApiService().fetchTopIndianSong(),
               builder: (context, snapshot) {
@@ -94,7 +115,36 @@ class homeScreen extends StatelessWidget {
 
             // categorisation : artists (5) ***
 
+            SizedBox(
+              height: 10,
+            ),
+
+
+            Container(
+              height: 30,
+              child: Text('Song by artist : '),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
             // arijit singh :
+
+            SizedBox(
+              height: 10,
+            ),
+
+
+            Container(
+              height: 20,
+              child: Text('arijit singh'),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
+
 
             FutureBuilder(
               future: ApiService().fetchSong('arijit singh'),
@@ -125,6 +175,18 @@ class homeScreen extends StatelessWidget {
             ),
 
             // sabrina carpenter : 
+            SizedBox(
+              height: 10,
+            ),
+
+            Container(
+              height: 20,
+              child: Text('sabrina carpenter'),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
 
             FutureBuilder(
               future: ApiService().fetchSong('sabrina carpenter'),
@@ -155,6 +217,18 @@ class homeScreen extends StatelessWidget {
             ),
 
             // taylor swift : 
+            SizedBox(
+              height: 10,
+            ),
+
+
+            Container(
+              height: 20,
+              child: Text('taylor swift'),
+            ),
+            SizedBox(
+              height: 5,
+            ),
 
             FutureBuilder(
               future: ApiService().fetchSong('taylor swift'),
@@ -185,6 +259,18 @@ class homeScreen extends StatelessWidget {
             ),
 
           // ed sheeren 
+            SizedBox(
+              height: 10,
+            ),
+
+          Container(
+              height: 20,
+              child: Text('ed sheeren'),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
 
           FutureBuilder(
               future: ApiService().fetchSong('ed sheeren'),
@@ -218,6 +304,18 @@ class homeScreen extends StatelessWidget {
 
 
             // categorisation : genres  (love, lofi, )
+            SizedBox(
+              height: 10,
+            ),
+
+            Container(
+              height: 20,
+              child: Text('love'),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
 
             FutureBuilder(
               future: ApiService().fetchSong('love'),
@@ -248,9 +346,20 @@ class homeScreen extends StatelessWidget {
             ),
 
             // songs by category : lofi songs
+            SizedBox(
+              height: 10,
+            ),
+
+            Container(
+              height: 20,
+              child: Text('lofi'),
+            ),
+            SizedBox(
+              height: 5,
+            ),
 
           FutureBuilder(
-              future: ApiService().fetchSong('love'),
+              future: ApiService().fetchSong('lofi'),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -276,11 +385,8 @@ class homeScreen extends StatelessWidget {
                 );
               },
             ),
-
-
           ],
         ),
-      ),
-    );
+      );
   }
 }
