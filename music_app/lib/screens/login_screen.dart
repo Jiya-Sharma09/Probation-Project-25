@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:music_app/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -10,48 +11,89 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<void> loginWithGoogle() async {
-    try {
-      // Step 1: Open your backend's Google login endpoint
-      final result = await FlutterWebAuth2.authenticate(
-        url: 'https://loginsignup-bzym.onrender.com/oauth2/authorization/google',
-        callbackUrlScheme: 'myapp', // must match backend redirect
-      );
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-      // Step 2: Extract JWT token from redirect URL
-      final token = Uri.parse(result).queryParameters['token'];
+  void loginEmailPassword() {}
 
-      if (token != null) {
-        // Step 3: Save JWT locally for later API calls
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt', token);
-
-        // Step 4: Redirect to Home Page
-        if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/home');
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login failed: token missing.")),
-        );
-      }
-    } catch (e) {
-      debugPrint('Login error: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
-      }
-    }
-  }
+  void loginWtihGoogle() {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: loginWithGoogle,
-          child: const Text("Login with Google"),
+        child: Form(
+          child: Column(
+            children: [
+              //email field
+              TextFormField(
+                validator: (value){
+                  if(value == null || value.isEmpty){
+                    return 'Please enter a valid email.';
+                  }
+                  return null;
+                },
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: 'email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: Color.fromARGB(255, 174, 135, 26),
+                    ),
+                  ),
+                ),
+              ),
+
+              //password field :
+
+              TextFormField(
+                validator: (value){
+                  if(value == null || value.isEmpty){
+                    return 'Please enter a valid email.';
+                  }
+                  return null;
+                },
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  hintText: 'password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: Color.fromARGB(255, 174, 135, 26),
+                    ),
+                  ),
+                ),
+              ),
+
+              // login button
+
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 1 / 3,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => homeScreen()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        Color.fromARGB(255, 174, 135, 26),
+                      ),
+                    ),
+                    child: Text('login'),
+                  ),
+                ),
+              ),
+
+
+
+            ],
+          ),
         ),
       ),
     );

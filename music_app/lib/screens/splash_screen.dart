@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-
+import 'package:music_app/screens/login_screen.dart';
 
 
 class splashScreen extends StatefulWidget{
@@ -20,7 +19,7 @@ class _splashScreenState extends State<splashScreen>{
           Navigator.pushReplacement(
             context, 
             MaterialPageRoute(
-              builder: (context) => homeScreen()
+              builder: (context) => LoginScreen()
               ),
           );
           

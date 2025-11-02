@@ -1,65 +1,61 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'profile.dart';
+import 'user_library.dart';
 
 class PageStruct extends StatefulWidget {
-  const PageStruct({super.key});
-
   @override
-  State<PageStruct> createState() => _PageState();
+  State<PageStruct> createState() => _PageStructState();
 }
 
-class _PageState extends State<PageStruct> {
-
+class _PageStructState extends State<PageStruct>{
+  
   int selectedIndex = 0;
 
-  final List<Widget> _pages = [
+  final _pageList = [
     homeScreen(),
+    //ProfilePage(),
+    //UserLibrary()
   ];
 
-  
-          void _onItemTapped(int index) {
-            setState(() {
-            selectedIndex = index;
-              });
-            }
+  void _onTap(int index){
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.menu)),
+      appBar: AppBar(),
 
-        title: Text('Geet', style: TextStyle(fontSize: 20)),
+      body: _pageList[selectedIndex],
 
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.person))],
-
-        iconTheme: IconThemeData(color: Color.fromARGB(255, 238, 195, 64)),
-      ),
-
-      body: _pages[selectedIndex],
-
-      
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // keeps all icons visible
+
+        selectedItemColor: Color.fromARGB(255, 174, 135, 26),
+        unselectedItemColor: Color.fromARGB(255, 119, 89, 4),
+        
+        onTap: _onTap,
+
         currentIndex: selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Color.fromARGB(255, 144, 109, 2), // highlight color for selected tab
-        unselectedItemColor:  Color.fromARGB(255, 238, 195, 64), // color for inactive tabs
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: "Library",
+        
+        items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home), 
+          label: 'home'
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
-
-      // backgroundColor: Colors.black12,
-      backgroundColor: const Color.fromARGB(255, 9, 9, 9),
-
-
+        BottomNavigationBarItem(
+          icon: Icon(Icons.my_library_music_rounded),
+          label: 'library'
+          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_2_rounded),
+          label: 'profile')
+      ]),
     );
   }
 }
