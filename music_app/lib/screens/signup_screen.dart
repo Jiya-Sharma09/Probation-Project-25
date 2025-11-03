@@ -12,8 +12,12 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _signUPkey = GlobalKey<FormState>();
 
-  void signupUser() {
-    
+  void signupUser(
+    BuildContext context, 
+    String email, 
+    String password
+  ) async {
+    //try{}catch(e){}
   }
 
   @override
@@ -21,12 +25,14 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
+          key: _signUPkey,
           child: Column(
             children: [
+              // email
               TextFormField(
                 controller: _emailController,
                 validator: (value) {
-                  if(value == null|| value.isEmpty){
+                  if (value == null || value.isEmpty) {
                     return "enter a valid email id !";
                   }
                   return null;
@@ -43,12 +49,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
 
-              SizedBox(height: 10,), 
+              // space
+              SizedBox(height: 10),
 
+              // password
               TextFormField(
                 controller: _passwordController,
                 validator: (value) {
-                  if(value == null|| value.isEmpty){
+                  if (value == null || value.isEmpty) {
                     return "enter your password !";
                   }
                   return null;
@@ -65,12 +73,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
 
-              SizedBox(height: 10,),
+              // space
+              SizedBox(height: 10),
 
               // signup button
               ElevatedButton(onPressed: () {}, child: Text('Sign up')),
 
-              SizedBox(height: 25,),
+              SizedBox(height: 25),
 
               TextButton(
                 onPressed: () {
