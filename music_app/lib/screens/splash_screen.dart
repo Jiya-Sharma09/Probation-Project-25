@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:music_app/screens/auth_gate.dart';
 import 'package:music_app/screens/login_screen.dart';
 
 
@@ -14,12 +15,12 @@ class _splashScreenState extends State<splashScreen>{
   void initState() {
       super.initState();
       Timer(
-        Duration(minutes: 3), 
+        Duration(seconds: 3), 
         (){
           Navigator.pushReplacement(
             context, 
             MaterialPageRoute(
-              builder: (context) => LoginScreen()
+              builder: (context) => AuthGate()
               ),
           );
           
@@ -38,7 +39,7 @@ class _splashScreenState extends State<splashScreen>{
         ),
       ),
 
-      backgroundColor: Color.fromARGB(255, 0, 0, 10),
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
     );
   }
 }
