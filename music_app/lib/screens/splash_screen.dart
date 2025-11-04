@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:music_app/screens/auth_gate.dart';
-import 'package:music_app/screens/login_screen.dart';
+//import 'package:music_app/screens/login_screen.dart';
 
 
-class splashScreen extends StatefulWidget{
+class SplashScreen extends StatefulWidget{
   @override 
-  State<splashScreen> createState() => _splashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _splashScreenState extends State<splashScreen>{
+class _SplashScreenState extends State<SplashScreen>{
 
   @override
   void initState() {

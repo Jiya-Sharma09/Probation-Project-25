@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -12,11 +12,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _signUPkey = GlobalKey<FormState>();
 
-  void signupUser(
-    BuildContext context, 
-    String email, 
-    String password
-  ) async {
+  void signupUser(BuildContext context, String email, String password) async {
     //try{}catch(e){}
   }
 

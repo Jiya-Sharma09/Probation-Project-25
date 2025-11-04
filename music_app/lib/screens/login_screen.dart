@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  // function for google auth : 
+  // function for google auth :
 
   void loginWtihGoogle() {}
 

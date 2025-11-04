@@ -16,13 +16,10 @@ class AuthGate extends StatelessWidget {
       future: isLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // show splash or loading
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.data == true) {
-          // user already logged in
           return homeScreen();
         } else {
-          // user not logged in
           return LoginScreen();
         }
       },

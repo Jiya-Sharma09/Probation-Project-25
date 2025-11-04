@@ -8,19 +8,18 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Geet music app',
+
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        
-        
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 153, 117, 40)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 153, 117, 40),
+        ),
       ),
-      home: splashScreen(),
+      home: SplashScreen(),
     );
   }
 }
-
