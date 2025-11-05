@@ -71,17 +71,23 @@ class _homeScreenState extends State<homeScreen> {
                         errorBuilder: (_, __, ___) => Container(
                           height: 100,
                           width: 140,
-                          color: Colors.grey[300],
+                          color: const Color.fromARGB(255, 255, 252, 252),
                           child: const Icon(Icons.music_note),
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    Text(song.artistName,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      song.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      song.artistName,
+                      style: const TextStyle(color: Color.fromARGB(255, 254, 253, 253), fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               );
@@ -95,14 +101,25 @@ class _homeScreenState extends State<homeScreen> {
   // Example: refresh one category manually
   Future<void> refreshCategory(String key) async {
     setState(() {
-      categoryFutures[key] = ApiService().fetchSong(key); // reassign Future to re-fetch
+      categoryFutures[key] = ApiService().fetchSong(
+        key,
+      ); // reassign Future to re-fetch
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Music App')),
+      backgroundColor: Color(10),
+       appBar: AppBar(
+        centerTitle: true,
+        //automaticallyImplyLeading: false,
+        title: Text(
+          "GEET",
+          style: TextStyle(color: Color.fromARGB(255, 89, 67, 8), fontSize: 25),
+        ),
+        backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
@@ -120,19 +137,60 @@ class _homeScreenState extends State<homeScreen> {
 
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text('Top Global songs', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Center(
+                child: Text(
+                  'Top Global songs',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 174, 135, 26),
+                  ),
+                ),
+              ),
             ),
             displaySongs(topGlobalSongs),
 
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text('Top Indian songs', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  'Top Indian songs',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 174, 135, 26),
+                  ),
+                ),
+              ),
             ),
             displaySongs(topIndianSongs),
 
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text('Arijit Singh', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  'Songs by Artist : ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 174, 135, 26),
+                  ),
+                ),
+              ),
+            ),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  'Arijit Singh',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 247, 247, 246),
+                  ),
+                ),
+              ),
             ),
             displaySongs(categoryFutures['arijit']!),
 

@@ -10,7 +10,7 @@ class ApiService {
   // to fetch songs form the external open database uisng api key
   // api service mein pehele we need an api we use convert
 
-  Future<List<dynamic>> fetchSong(String querry) async {
+  Future<List<Song>> fetchSong(String querry) async {
     // when i get url from the exernal url for fetching the songs enter it here :
 
     try {
@@ -20,7 +20,8 @@ class ApiService {
         // response body : response.body will contain a list of maps each individual map contains a song
         final data = jsonDecode(response.body)['data'];
 
-        return data.map((song) => Song.fromJson(song)).toList();
+        return List<Song>.from(data.map((song) => Song.fromJson(song)));
+
       } else {
         return [];
       }
@@ -31,13 +32,14 @@ class ApiService {
 
   // now for fetchng top global songs for homescreen
 
-  Future<List<dynamic>> fetchTopGlobalSong() async {
+  Future<List<Song>> fetchTopGlobalSong() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/chart/0/tracks'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
-        return data.map((song) => Song.fromJson(song)).toList();
+        return List<Song>.from(data.map((song) => Song.fromJson(song)));
+
       } else {
         return [];
       }
@@ -48,7 +50,7 @@ class ApiService {
 
   // now for fetching top indian songs
 
-  Future<List<dynamic>> fetchTopIndianSong() async {
+  Future<List<Song>> fetchTopIndianSong() async {
     // when i get url from the exernal url for fetching the songs enter it here :
 
     try {
@@ -56,7 +58,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
-        return data.map((song) => Song.fromJson(song)).toList();
+        return List<Song>.from(data.map((song) => Song.fromJson(song)));
+
       } else {
         return [];
       }

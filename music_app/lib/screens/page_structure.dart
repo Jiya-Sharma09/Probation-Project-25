@@ -22,9 +22,11 @@ class _PageStructState extends State<PageStruct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+backgroundColor: Color.fromARGB(0, 0, 0, 0),
       appBar: AppBar(),
 
       body: _pageList[selectedIndex],
+      
 
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color.fromARGB(255, 42, 41, 41),

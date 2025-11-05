@@ -19,74 +19,92 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          key: _signUPkey,
-          child: Column(
-            children: [
-              // email
-              TextFormField(
-                controller: _emailController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "enter a valid email id !";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: 'enter your email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(
-                      width: 1.5,
-                      color: Color.fromARGB(255, 174, 135, 26),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _signUPkey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // email
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  child: TextFormField(
+                    controller: _emailController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "enter a valid email id !";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'enter your email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          width: 3,
+                          color: Color.fromARGB(255, 174, 135, 26),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // space
-              SizedBox(height: 10),
+                // space
+                SizedBox(height: 10),
 
-              // password
-              TextFormField(
-                controller: _passwordController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "enter your password !";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  hintText: 'enter your password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(
-                      width: 1.5,
-                      color: Color.fromARGB(255, 174, 135, 26),
+                // password
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  child: TextFormField(
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "enter your password !";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'enter your password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          width: 10,
+                          color: Color.fromARGB(255, 174, 135, 26),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // space
-              SizedBox(height: 10),
+                // space
+                SizedBox(height: 10),
 
-              // signup button
-              ElevatedButton(onPressed: () {}, child: Text('Sign up')),
+                // signup button
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(
+                      Color.fromARGB(255, 174, 135, 26),
+                    ),
+                  ),
+                  onPressed: () {},
+                  child: Text('Sign up', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(0, 9, 4, 0)),),
+                ),
 
-              SizedBox(height: 25),
+                SizedBox(height: 25),
 
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
-                child: Text("Have an account ? Login "),
-              ),
-            ],
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  child: Text("Have an account ? Login "),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -83,91 +83,125 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        // title: Text(
+        //   "Geet",
+        //   style: TextStyle(color: Color.fromARGB(255, 174, 135, 26)),
+        // ),
+        backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      ),
       body: Center(
-        child: Form(
-          key: _loginFormKey,
-          child: Column(
-            children: [
-              //email field
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid email.';
-                  }
-                  return null;
-                },
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(
-                      width: 2,
-                      color: Color.fromARGB(255, 174, 135, 26),
-                    ),
-                  ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _loginFormKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  height: 50,
+                  child: Center(
+                    child: 
+                    Text('GEET', style: TextStyle(fontSize: 40,color:Color.fromARGB(255, 174, 135, 26) ),
+                  )
+                  )
                 ),
-              ),
 
-              // spacing :
-              SizedBox(height: 10),
-
-              //password field :
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid password.';
-                  }
-                  return null;
-                },
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  hintText: 'password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    borderSide: BorderSide(
-                      width: 2,
-                      color: Color.fromARGB(255, 174, 135, 26),
-                    ),
-                  ),
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-
-              SizedBox(height: 10),
-
-              // login button :
-              Center(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 1 / 3,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => homeScreen()),
-                      );
+                //email field
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a valid email.';
+                      }
+                      return null;
                     },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(
-                        Color.fromARGB(255, 174, 135, 26),
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: Color.fromARGB(255, 174, 135, 26),
+                        ),
                       ),
                     ),
-                    child: Text('login'),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 25),
+                // spacing :
+                SizedBox(height: 10),
 
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignupScreen()),
-                  );
-                },
-                child: Text("Don't have an account ? sign up "),
-              ),
-            ],
+                //password field :
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a valid password.';
+                      }
+                      return null;
+                    },
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      hintText: 'password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: Color.fromARGB(255, 174, 135, 26),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                // login button :
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 1 / 3,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => homeScreen()),
+                        );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          Color.fromARGB(255, 174, 135, 26),
+                        ),
+                      ),
+                      child: Text('login ', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(0, 245, 243, 243)),),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 25),
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                    );
+                  },
+                  child: Text("Don't have an account ? sign up "),
+                ),
+              ],
+            ),
           ),
         ),
       ),
