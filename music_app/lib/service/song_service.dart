@@ -4,7 +4,7 @@ import 'package:music_app/models/song_model.dart';
 import 'api_config.dart';
 
 class ApiService {
-  final baseUrl = ApiConfig.activeBaseUrl;
+  final baseUrl = ApiConfig.deezerBaseUrl;
   // all the following functions are written in accordance with a base url that i will later change in the main api_config.dart file
 
   // to fetch songs form the external open database uisng api key
@@ -14,7 +14,7 @@ class ApiService {
     // when i get url from the exernal url for fetching the songs enter it here :
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/search?q=$querry'));
+      final response = await http.get(Uri.parse('$baseUrl/search?q=$querry&index=0'));
 
       if (response.statusCode == 200) {
         // response body : response.body will contain a list of maps each individual map contains a song
@@ -54,7 +54,7 @@ class ApiService {
     // when i get url from the exernal url for fetching the songs enter it here :
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/chart/IN/tracks'));
+      final response = await http.get(Uri.parse('$baseUrl/chart/110/tracks'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];

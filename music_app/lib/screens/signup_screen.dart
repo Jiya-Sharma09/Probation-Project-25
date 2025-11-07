@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:music_app/service/user_api.dart';
+import 'package:music_app/models/user_model.dart';
 import 'login_screen.dart';
-//import 'package:http/http.dart' as http;
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -8,91 +9,143 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _signUPkey = GlobalKey<FormState>();
 
-  void signupUser(BuildContext context, String email, String password) async {
-    //try{}catch(e){}
+  bool _isLoading = false;
+
+  Future<void> signupUser() async {
+    if (!_signUPkey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      User? user = await ApiServiceUser().signup(
+        _usernameController.text,
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Signup successful! Welcome ${user.username}'),
+          ),
+        );
+
+        //  Navigate to login screen or home after signup
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(228, 0, 0, 0),
       body: Center(
         child: SingleChildScrollView(
           child: Form(
             key: _signUPkey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // email
+                // Username
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 250, 248, 248)
+                    ),
+                    controller: _usernameController,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Enter your username!'
+                        : null,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your username',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Email
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 2 / 3,
+                  child: TextFormField(
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 250, 248, 248)
+                    ),
                     controller: _emailController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "enter a valid email id !";
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'enter your email',
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Enter a valid email!'
+                        : null,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your email',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(
-                          width: 3,
-                          color: Color.fromARGB(255, 174, 135, 26),
-                        ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
 
-                // space
-                SizedBox(height: 10),
-
-                // password
+                // Password
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 250, 248, 248)
+                    ),
                     controller: _passwordController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "enter your password !";
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'enter your password',
+                    obscureText: true,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Enter your password!'
+                        : null,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your password',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(
-                          width: 10,
-                          color: Color.fromARGB(255, 174, 135, 26),
-                        ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(height: 30),
 
-                // space
-                SizedBox(height: 10),
-
-                // signup button
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      Color.fromARGB(255, 174, 135, 26),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text('Sign up', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(0, 9, 4, 0)),),
-                ),
-
-                SizedBox(height: 25),
+                // Signup Button
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              const Color.fromARGB(255, 174, 135, 26),
+                            ),
+                          ),
+                          onPressed: signupUser,
+                          child: const Text(
+                            'Sign up',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                const SizedBox(height: 40),
 
                 TextButton(
                   onPressed: () {
@@ -101,15 +154,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       MaterialPageRoute(builder: (context) => LoginScreen()),
                     );
                   },
-                  child: Text("Have an account ? Login "),
+                  child: const Text("Have an account? Login"),
                 ),
               ],
             ),
           ),
         ),
       ),
-
-      backgroundColor: Color.fromARGB(0, 0, 0, 0),
     );
   }
 }

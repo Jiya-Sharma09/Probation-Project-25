@@ -11,7 +11,7 @@ class PageStruct extends StatefulWidget {
 class _PageStructState extends State<PageStruct> {
   int selectedIndex = 0;
 
-  final _pageList = [homeScreen(), ProfilePage(), UserLibrary()];
+  final _pageList = [homeScreen(),  UserLibrary(), ProfilePage()];
 
   void _onTap(int index) {
     setState(() {
@@ -23,7 +23,9 @@ class _PageStructState extends State<PageStruct> {
   Widget build(BuildContext context) {
     return Scaffold(
 backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(129, 12, 0, 0),
+      ),
 
       body: _pageList[selectedIndex],
       
@@ -31,8 +33,8 @@ backgroundColor: Color.fromARGB(0, 0, 0, 0),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color.fromARGB(255, 42, 41, 41),
 
-        selectedItemColor: Color.fromARGB(255, 174, 135, 26),
-        unselectedItemColor: Color.fromARGB(255, 119, 89, 4),
+        selectedItemColor: Color(0xFF512D80),
+        unselectedItemColor: Color.fromARGB(255, 255, 255, 255),
 
         onTap: _onTap,
 

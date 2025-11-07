@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/song_service.dart';
+import 'music_player_screen.dart';
 
 class homeScreen extends StatefulWidget {
   const homeScreen({super.key});
@@ -15,6 +16,11 @@ class _homeScreenState extends State<homeScreen> {
   late Future<List<Song>> topIndianSongs;
   final Map<String, Future<List<Song>>> categoryFutures = {};
 
+  // function for navigating to different screens  : 
+  void NavigateScreen(){
+    
+  }
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +33,7 @@ class _homeScreenState extends State<homeScreen> {
     categoryFutures['arijit'] = ApiService().fetchSong('arijit singh');
     categoryFutures['sabrina'] = ApiService().fetchSong('sabrina carpenter');
     categoryFutures['taylor'] = ApiService().fetchSong('taylor swift');
-    categoryFutures['ed'] = ApiService().fetchSong('ed sheeren');
+    categoryFutures['ed'] = ApiService().fetchSong('ed sheeran');
     categoryFutures['love'] = ApiService().fetchSong('love');
     categoryFutures['lofi'] = ApiService().fetchSong('lofi');
   }
@@ -40,59 +46,73 @@ class _homeScreenState extends State<homeScreen> {
         future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 245, 245, 247),));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No songs found.'));
+            return const Center(child: Text('No songs found.', style: TextStyle(color: Color.fromARGB(180, 245, 242, 242)),));
           }
 
           final songs = snapshot.data!;
 
           return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: songs.length,
-            itemBuilder: (context, index) {
-              final song = songs[index];
-              return Container(
+  scrollDirection: Axis.horizontal,
+  itemCount: songs.length,
+  itemBuilder: (context, index) {
+    final song = songs[index]; // ✅ Instance, not class
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MusicPlayerScreen(song: song),
+          ),
+        );
+      },
+      child: Container(
+        width: 140,
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                song.image,             
+                height: 100,
                 width: 140,
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // image with fixed height
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        song.image,
-                        height: 100,
-                        width: 140,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          height: 100,
-                          width: 140,
-                          color: const Color.fromARGB(255, 255, 252, 252),
-                          child: const Icon(Icons.music_note),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      song.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      song.artistName,
-                      style: const TextStyle(color: Color.fromARGB(255, 254, 253, 253), fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  height: 100,
+                  width: 140,
+                  color: const Color.fromARGB(255, 255, 252, 252),
+                  child: const Icon(Icons.music_note),
                 ),
-              );
-            },
-          );
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              song.title,               
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              song.artistName,          
+              style: const TextStyle(
+                color: Color.fromARGB(255, 254, 253, 253),
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
+
         },
       ),
     );
@@ -109,19 +129,8 @@ class _homeScreenState extends State<homeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(10),
-       appBar: AppBar(
-        centerTitle: true,
-        //automaticallyImplyLeading: false,
-        title: Text(
-          "GEET",
-          style: TextStyle(color: Color.fromARGB(255, 89, 67, 8), fontSize: 25),
-        ),
-        backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+    return  SingleChildScrollView(
+        
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -143,7 +152,7 @@ class _homeScreenState extends State<homeScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 174, 135, 26),
+                    color: Color(0xFF512D80),
                   ),
                 ),
               ),
@@ -158,7 +167,7 @@ class _homeScreenState extends State<homeScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 174, 135, 26),
+                    color: Color(0xFF512D80),
                   ),
                 ),
               ),
@@ -173,7 +182,7 @@ class _homeScreenState extends State<homeScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 174, 135, 26),
+                    color: Color(0xFF512D80),
                   ),
                 ),
               ),
@@ -194,11 +203,26 @@ class _homeScreenState extends State<homeScreen> {
             ),
             displaySongs(categoryFutures['arijit']!),
 
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  'Ed sheeren',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 247, 247, 246),
+                  ),
+                ),
+              ),
+            ),
+            displaySongs(categoryFutures['ed']!),
+
+
             // ... other categories
             const SizedBox(height: 20),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }

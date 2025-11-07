@@ -1,10 +1,8 @@
 import 'dart:convert';
-
-//import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:http/http.dart' as http;
 import 'package:music_app/screens/home_screen.dart';
+import 'page_structure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_screen.dart';
 
@@ -20,7 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
 
-  // i will call this function once api from backend (arnav) is reaady
+  bool _isLoading = false; 
+
   Future<void> loginUser(
     BuildContext context,
     String email,
@@ -28,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   ) async {
     try {
       final response = await http.post(
-        Uri.parse('https://loginsignup-bzym.onrender.com/api/auth/login'),
+        Uri.parse('https://loginsignup-2.onrender.com/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
@@ -46,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => homeScreen()),
+            MaterialPageRoute(builder: (context) => PageStruct()),
           );
         } else {
           _showError(context, 'Token missing in response');
@@ -71,27 +70,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
-
-  // function for google auth :
-
-  void loginWtihGoogle() {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(0, 0, 0, 0),
+      backgroundColor: Color.fromARGB(215, 0, 0, 0),
       appBar: AppBar(
+        title: Text('Kadence', style: TextStyle(fontFamily: 'Playfair'),),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        // title: Text(
-        //   "Geet",
-        //   style: TextStyle(color: Color.fromARGB(255, 174, 135, 26)),
-        // ),
-        backgroundColor: Color.fromARGB(0, 0, 0, 0),
+        backgroundColor: Color.fromARGB(212, 0, 0, 0),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -101,24 +91,29 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   height: 50,
                   child: Center(
-                    child: 
-                    Text('GEET', style: TextStyle(fontSize: 40,color:Color.fromARGB(255, 174, 135, 26) ),
-                  )
-                  )
+                    child: Text(
+                      'KADENCE',
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Color(0xFF512D80),
+                      ),
+                    ),
+                  ),
                 ),
 
-                SizedBox(
-                  height: 10,
-                ),
-                //email field
+                SizedBox(height: 10),
+
+                // email field
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 250, 248, 248)
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a valid email.';
@@ -132,20 +127,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide(
                           width: 2,
-                          color: Color.fromARGB(255, 174, 135, 26),
+                          color: Color(0xFF512D80)
+,
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                // spacing :
                 SizedBox(height: 10),
 
-                //password field :
+                // password field
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 250, 248, 248)
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a valid password.';
@@ -159,7 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide(
                           width: 2,
-                          color: Color.fromARGB(255, 174, 135, 26),
+                          color: Color(0xFF512D80)
+,
                         ),
                       ),
                     ),
@@ -168,23 +167,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 10),
 
-                // login button :
+
+              // login button : 
+                
                 Center(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 1 / 3,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => homeScreen()),
-                        );
-                      },
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              // if (_loginFormKey.currentState!.validate()) {
+                              //   setState(() => _isLoading = true);
+                              //   await loginUser(
+                              //     context,
+                              //     _emailController.text.trim(),
+                              //     _passwordController.text.trim(),
+                              //   );
+                              //   setState(() => _isLoading = false);
+                              // }
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>PageStruct()));
+                            },
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
-                          Color.fromARGB(255, 174, 135, 26),
+                          Color(0xFF512D80)
+
                         ),
                       ),
-                      child: Text('login ', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(0, 245, 243, 243)),),
+                      child: _isLoading
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'login ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 245, 243, 243),
+                              ),
+                            ),
                     ),
                   ),
                 ),
