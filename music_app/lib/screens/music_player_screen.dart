@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/api_config.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   final Song song;
@@ -16,6 +18,43 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   late AudioPlayer _player;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+
+  Future<void> addToWishlist() async {
+    final songId = widget.song.id;
+    final url = "${ApiConfig.activeBaseUrl}/wishlist/add/$songId";
+
+    // Read JWT token
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("authToken");
+
+    if (token == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please log in first")));
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Added to liked songs")));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Failed: ${response.body}")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
 
   @override
   void initState() {
@@ -61,12 +100,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(
-          song.title,
-          style: TextStyle(color: Color(0xFF512D80)),
-        ),
+        title: Text(song.title, style: TextStyle(color: Color(0xFF512D80))),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Color(0xFF512D80)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border, color: Color(0xFF512D80)),
+            onPressed: addToWishlist,
+          ),
+        ],
       ),
 
       body: Padding(
@@ -98,10 +140,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             Text(
               song.artist,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
 
             const SizedBox(height: 30),
@@ -109,10 +148,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
             Slider(
               min: 0,
               max: _duration.inSeconds.toDouble(),
-              value: _position.inSeconds.clamp(
-                0,
-                _duration.inSeconds,
-              ).toDouble(),
+              value: _position.inSeconds
+                  .clamp(0, _duration.inSeconds)
+                  .toDouble(),
               activeColor: Color(0xFF512D80),
               inactiveColor: Colors.grey,
               onChanged: (value) {
@@ -123,8 +161,14 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(formatTime(_position), style: TextStyle(color: Colors.grey)),
-                Text(formatTime(_duration), style: TextStyle(color: Colors.grey)),
+                Text(
+                  formatTime(_position),
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  formatTime(_duration),
+                  style: TextStyle(color: Colors.grey),
+                ),
               ],
             ),
 

@@ -2,8 +2,8 @@ class Song {
   final String id;
   final String title;
   final String artist;
-  final String image;
-  final String url; // audio URL (mp3)
+  final String image;   // full URL after combining base + imagePath
+  final String url;     // audio URL
 
   Song({
     required this.id,
@@ -14,12 +14,21 @@ class Song {
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
+    // Build full image URL
+    final base = "https://loginsignup-2.onrender.com";
+
     return Song(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? '',
       title: json['title'] ?? '',
       artist: json['artist'] ?? '',
-      image: json['image'] ?? '',
-      url: json['url'] ?? '',
+      
+      // Build image path correctly
+      image: json['imagePath'] != null
+          ? base + json['imagePath']
+          : "https://via.placeholder.com/200",
+
+      // Audio URL
+      url: json['audioUrl'] ?? '',
     );
   }
 }

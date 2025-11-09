@@ -12,13 +12,14 @@ class homeScreen extends StatefulWidget {
 
 class _homeScreenState extends State<homeScreen> {
   late Future<List<Song>> allSongs;
-  late Future<List<Song>> topGlobal;
-  late Future<List<Song>> topIndian;
-  late Future<List<Song>> arijitSongs;
   late Future<List<Song>> taylorSongs;
-  late Future<List<Song>> duaSongs;
-  late Future<List<Song>> loveSongs;
+  late Future<List<Song>> arijitSongs;
+  late Future<List<Song>> sabrinaSongs;
   late Future<List<Song>> lofiSongs;
+  late Future<List<Song>> loveSongs;
+
+  final TextEditingController searchController = TextEditingController();
+  Future<List<Song>>? searchResults;
 
   @override
   void initState() {
@@ -26,22 +27,27 @@ class _homeScreenState extends State<homeScreen> {
 
     final api = ApiService();
 
-    // ALL SONGS (full list)
     allSongs = api.fetchAllSongs();
-
-    // CATEGORY FETCHES (dummy or real - ApiService handles switching)
-    topGlobal = api.fetchAllSongs();       // later change to /top-global
-    topIndian = api.fetchAllSongs();       // later change to /top-india
-
-    arijitSongs = api.searchSongs("arijit");
     taylorSongs = api.searchSongs("taylor swift");
-    duaSongs = api.searchSongs("dua lipa");
-    loveSongs = api.searchSongs("love");
+    arijitSongs = api.searchSongs("arijit singh");
+    sabrinaSongs = api.searchSongs("sabrina carpenter");
     lofiSongs = api.searchSongs("lofi");
+    loveSongs = api.searchSongs("love");
   }
 
-  // Horizontal Songs List
-  Widget displaySongs(Future<List<Song>> future) {
+  void _onSearchChanged(String value) {
+    if (value.trim().isEmpty) {
+      setState(() => searchResults = null);
+      return;
+    }
+
+    setState(() {
+      searchResults = ApiService().searchSongs(value);
+    });
+  }
+
+  // ✅ Reusable Horizontal Scroller
+  Widget songScroller(Future<List<Song>> future) {
     return SizedBox(
       height: 190,
       child: FutureBuilder<List<Song>>(
@@ -49,48 +55,49 @@ class _homeScreenState extends State<homeScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(200, 255, 255, 255),
-              ),
+              child: CircularProgressIndicator(color: Colors.white),
             );
           }
 
-          List<Song> songs = snapshot.data ?? [];
-
-          if (songs.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-              child: Text("No songs found",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text("No songs found", style: TextStyle(color: Colors.white)),
             );
           }
+
+          final songs = snapshot.data!;
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: songs.length,
             itemBuilder: (context, index) {
-              final song = songs[index];
+              final s = songs[index];
 
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => MusicPlayerScreen(song: song),
+                      builder: (_) => MusicPlayerScreen(song: s),
                     ),
                   );
                 },
                 child: Container(
                   width: 140,
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // IMAGE
+                      // Song Image
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          song.image,
+                          s.image,
                           height: 100,
                           width: 140,
                           fit: BoxFit.cover,
@@ -105,20 +112,23 @@ class _homeScreenState extends State<homeScreen> {
 
                       const SizedBox(height: 8),
 
-                      // TITLE
+                      // Song Title
                       Text(
-                        song.title,
+                        s.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(color: Colors.white),
                       ),
 
-                      // ARTIST
+                      // Artist
                       Text(
-                        song.artist,
+                        s.artist,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -131,7 +141,6 @@ class _homeScreenState extends State<homeScreen> {
     );
   }
 
-  // Style for section title
   Widget sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -154,44 +163,61 @@ class _homeScreenState extends State<homeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SEARCH BAR
-          const Padding(
-            padding: EdgeInsets.all(16),
+          // ✅ Updated Search Bar (rounded + matching tile bg)
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: TextField(
+              controller: searchController,
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Search',
-                prefixIcon: Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.08),
+                prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                hintStyle: const TextStyle(color: Colors.white70),
+
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFF512D80)),
+                ),
               ),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
 
-          //Top Global
-          sectionTitle("Top Global"),
-          displaySongs(topGlobal),
+          // ✅ Show search results if searching
+          if (searchResults != null) ...[
+            sectionTitle("Search Results"),
+            songScroller(searchResults!),
+            const SizedBox(height: 20),
+          ],
 
-          //Top Indian
-          sectionTitle("Top Indian"),
-          displaySongs(topIndian),
+          // ✅ Original categories
+          sectionTitle("All Songs"),
+          songScroller(allSongs),
 
-          // Arijit
-          sectionTitle("Arijit Singh"),
-          displaySongs(arijitSongs),
-
-          // Taylor Swift
           sectionTitle("Taylor Swift"),
-          displaySongs(taylorSongs),
+          songScroller(taylorSongs),
 
-          // Dua Lipa
-          sectionTitle("Dua Lipa"),
-          displaySongs(duaSongs),
+          sectionTitle("Arijit Singh"),
+          songScroller(arijitSongs),
 
-          // Love Songs
+          sectionTitle("Sabrina Carpenter"),
+          songScroller(sabrinaSongs),
+
           sectionTitle("Love"),
-          displaySongs(loveSongs),
+          songScroller(loveSongs),
 
-          // Lofi
           sectionTitle("Lofi"),
-          displaySongs(lofiSongs),
+          songScroller(lofiSongs),
 
           const SizedBox(height: 20),
         ],

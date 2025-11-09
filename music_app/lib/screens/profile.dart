@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
     userFuture = fetchUserProfile();
   }
 
-  // ✅ Fetch Logged-in User Profile
+  // Fetch Logged-in User Profile
   Future<User?> fetchUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
@@ -53,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // ✅ Logout Function (Deletes Token + Navigates to Login)
+  // Logout Function (Deletes Token + Navigates to Login)
   Future<void> logoutUser() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("token"); // delete stored token
@@ -73,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator(
-              color: Color.fromARGB(255, 174, 135, 26),
+              color: Color(0xFF512D80),
             );
           }
 
@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const Icon(
                 Icons.person_2_rounded,
                 size: 100,
-                color: Color.fromARGB(255, 174, 135, 26),
+                color: Color(0xFF512D80),
               ),
 
               const SizedBox(height: 20),
@@ -122,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: logoutUser,
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(
-                    const Color.fromARGB(255, 174, 135, 26),
+                    const Color(0xFF512D80),
                   ),
                 ),
                 child: const Text(

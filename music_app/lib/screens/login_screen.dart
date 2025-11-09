@@ -90,8 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                   child: Center(
                     child: Text(
-                      'KADENCE',
+                      'Kadence',
                       style: TextStyle(
+                        fontFamily: 'Playfair',
                         fontSize: 40,
                         color: Color(0xFF512D80),
                       ),
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 30),
 
                 // email field
                 SizedBox(
@@ -157,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 20),
 
 
               // login button : 

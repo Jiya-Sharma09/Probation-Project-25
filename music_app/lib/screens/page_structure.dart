@@ -13,7 +13,7 @@ class PageStruct extends StatefulWidget {
 class _PageStructState extends State<PageStruct> {
   int selectedIndex = 0;
 
-  final _pageList = [homeScreen(),  UserLibrary(), ProfilePage()];
+  final _pageList = [homeScreen(),  UserLibraryScreen(), ProfilePage()];
 
   void _onTap(int index) {
     setState(() {

@@ -57,4 +57,22 @@ class ApiService {
       throw Exception("Error searching songs: $e");
     }
   }
+
+
+  // ✅ Get user's wishlist (Array of songs)
+Future<List<Song>> getWishlist() async {
+  try {
+    final response = await http.get(Uri.parse('$baseUrl/api/wishlist'));
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((json) => Song.fromJson(json)).toList();
+    } else {
+      return [];
+    }
+  } catch (e) {
+    throw Exception("Error fetching wishlist: $e");
+  }
+}
+
 }
