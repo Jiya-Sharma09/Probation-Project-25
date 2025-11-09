@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_app/models/song_model.dart';
+import 'package:music_app/service/api_config.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   final Song song;
@@ -12,7 +13,7 @@ class MusicPlayerScreen extends StatefulWidget {
 }
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  late AudioPlayer _player;    // just_audio player
+  late AudioPlayer _player;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
 
@@ -25,20 +26,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
   Future<void> _initializePlayer() async {
     try {
-      await _player.setUrl(widget.song.preview);
+      // ✅ NEW: Build complete audio URL
+      final audioUrl = "${ApiConfig.activeBaseUrl}${widget.song.url}";
 
-      // Listen to duration + position updates
+      await _player.setUrl(audioUrl);
+
       _player.durationStream.listen((d) {
-        if (d != null) {
-          setState(() => _duration = d);
-        }
+        if (d != null) setState(() => _duration = d);
       });
 
       _player.positionStream.listen((p) {
         setState(() => _position = p);
       });
     } catch (e) {
-      print("Error loading audio: $e");
+      print("Audio load error: $e");
     }
   }
 
@@ -60,9 +61,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(song.title, style: TextStyle(color: Color(0xFFAE871A))),
+        title: Text(
+          song.title,
+          style: TextStyle(color: Color(0xFF512D80)),
+        ),
         backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Color(0xFFAE871A)),
+        iconTheme: const IconThemeData(color: Color(0xFF512D80)),
       ),
 
       body: Padding(
@@ -70,7 +74,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Song Image
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
@@ -83,7 +86,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 25),
 
-            // Title
             Text(
               song.title,
               style: const TextStyle(
@@ -94,9 +96,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
               textAlign: TextAlign.center,
             ),
 
-            // Artist
             Text(
-              song.artistName,
+              song.artist,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -105,19 +106,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 30),
 
-            // Slider
             Slider(
               min: 0,
               max: _duration.inSeconds.toDouble(),
-              value: _position.inSeconds.clamp(0, _duration.inSeconds).toDouble(),
-              activeColor: Color(0xFFAE871A),
+              value: _position.inSeconds.clamp(
+                0,
+                _duration.inSeconds,
+              ).toDouble(),
+              activeColor: Color(0xFF512D80),
               inactiveColor: Colors.grey,
               onChanged: (value) {
                 _player.seek(Duration(seconds: value.toInt()));
               },
             ),
 
-            // Time Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -128,17 +130,17 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 30),
 
-            // Play / Pause
             StreamBuilder<PlayerState>(
               stream: _player.playerStateStream,
               builder: (context, snapshot) {
-                final playerState = snapshot.data;
-                final isPlaying = playerState?.playing ?? false;
+                final isPlaying = snapshot.data?.playing ?? false;
 
                 return IconButton(
                   iconSize: 60,
-                  color: Color(0xFFAE871A),
-                  icon: Icon(isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  color: Color(0xFF512D80),
+                  icon: Icon(
+                    isPlaying ? Icons.pause_circle : Icons.play_circle,
+                  ),
                   onPressed: () {
                     isPlaying ? _player.pause() : _player.play();
                   },

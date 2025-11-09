@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:music_app/screens/home_screen.dart';
 import 'page_structure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_screen.dart';
@@ -77,12 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(215, 0, 0, 0),
-      appBar: AppBar(
-        title: Text('Kadence', style: TextStyle(fontFamily: 'Playfair'),),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Color.fromARGB(212, 0, 0, 0),
-      ),
+      
       body: Center(
         child: SingleChildScrollView(
           child: Form(
@@ -127,8 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide(
                           width: 2,
-                          color: Color(0xFF512D80)
-,
+                          color: Color(0xFF512D80),
                         ),
                       ),
                     ),
@@ -157,8 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide(
                           width: 2,
-                          color: Color(0xFF512D80)
-,
+                          color: Color(0xFF512D80),
                         ),
                       ),
                     ),
@@ -191,7 +183,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
                           Color(0xFF512D80)
-
                         ),
                       ),
                       child: _isLoading

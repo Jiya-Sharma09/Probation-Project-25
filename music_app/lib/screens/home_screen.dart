@@ -11,218 +11,191 @@ class homeScreen extends StatefulWidget {
 }
 
 class _homeScreenState extends State<homeScreen> {
-  // Cache futures here so they are created once
-  late Future<List<Song>> topGlobalSongs;
-  late Future<List<Song>> topIndianSongs;
-  final Map<String, Future<List<Song>>> categoryFutures = {};
-
-  // function for navigating to different screens  : 
-  void NavigateScreen(){
-    
-  }
+  late Future<List<Song>> allSongs;
+  late Future<List<Song>> topGlobal;
+  late Future<List<Song>> topIndian;
+  late Future<List<Song>> arijitSongs;
+  late Future<List<Song>> taylorSongs;
+  late Future<List<Song>> duaSongs;
+  late Future<List<Song>> loveSongs;
+  late Future<List<Song>> lofiSongs;
 
   @override
   void initState() {
     super.initState();
 
-    // create futures once
-    topGlobalSongs = ApiService().fetchTopGlobalSong();
-    topIndianSongs = ApiService().fetchTopIndianSong();
+    final api = ApiService();
 
-    // example categories (cached by key)
-    categoryFutures['arijit'] = ApiService().fetchSong('arijit singh');
-    categoryFutures['sabrina'] = ApiService().fetchSong('sabrina carpenter');
-    categoryFutures['taylor'] = ApiService().fetchSong('taylor swift');
-    categoryFutures['ed'] = ApiService().fetchSong('ed sheeran');
-    categoryFutures['love'] = ApiService().fetchSong('love');
-    categoryFutures['lofi'] = ApiService().fetchSong('lofi');
+    // ALL SONGS (full list)
+    allSongs = api.fetchAllSongs();
+
+    // CATEGORY FETCHES (dummy or real - ApiService handles switching)
+    topGlobal = api.fetchAllSongs();       // later change to /top-global
+    topIndian = api.fetchAllSongs();       // later change to /top-india
+
+    arijitSongs = api.searchSongs("arijit");
+    taylorSongs = api.searchSongs("taylor swift");
+    duaSongs = api.searchSongs("dua lipa");
+    loveSongs = api.searchSongs("love");
+    lofiSongs = api.searchSongs("lofi");
   }
 
-  // helper returns a widget for a horizontal list
+  // Horizontal Songs List
   Widget displaySongs(Future<List<Song>> future) {
     return SizedBox(
-      height: 190, // give a fixed height for horizontal list
+      height: 190,
       child: FutureBuilder<List<Song>>(
         future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 245, 245, 247),));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No songs found.', style: TextStyle(color: Color.fromARGB(180, 245, 242, 242)),));
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(200, 255, 255, 255),
+              ),
+            );
           }
 
-          final songs = snapshot.data!;
+          List<Song> songs = snapshot.data ?? [];
+
+          if (songs.isEmpty) {
+            return const Center(
+              child: Text("No songs found",
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
 
           return ListView.builder(
-  scrollDirection: Axis.horizontal,
-  itemCount: songs.length,
-  itemBuilder: (context, index) {
-    final song = songs[index]; // ✅ Instance, not class
+            scrollDirection: Axis.horizontal,
+            itemCount: songs.length,
+            itemBuilder: (context, index) {
+              final song = songs[index];
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MusicPlayerScreen(song: song),
-          ),
-        );
-      },
-      child: Container(
-        width: 140,
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                song.image,             
-                height: 100,
-                width: 140,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  height: 100,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MusicPlayerScreen(song: song),
+                    ),
+                  );
+                },
+                child: Container(
                   width: 140,
-                  color: const Color.fromARGB(255, 255, 252, 252),
-                  child: const Icon(Icons.music_note),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              song.title,               
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              song.artistName,          
-              style: const TextStyle(
-                color: Color.fromARGB(255, 254, 253, 253),
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  },
-);
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // IMAGE
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          song.image,
+                          height: 100,
+                          width: 140,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            height: 100,
+                            width: 140,
+                            color: Colors.white,
+                            child: const Icon(Icons.music_note),
+                          ),
+                        ),
+                      ),
 
+                      const SizedBox(height: 8),
+
+                      // TITLE
+                      Text(
+                        song.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+
+                      // ARTIST
+                      Text(
+                        song.artist,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
     );
   }
 
-  // Example: refresh one category manually
-  Future<void> refreshCategory(String key) async {
-    setState(() {
-      categoryFutures[key] = ApiService().fetchSong(
-        key,
-      ); // reassign Future to re-fetch
-    });
+  // Style for section title
+  Widget sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Center(
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF512D80),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return  SingleChildScrollView(
-        
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
-                ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // SEARCH BAR
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                prefixIcon: Icon(Icons.search),
               ),
             ),
+          ),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  'Top Global songs',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF512D80),
-                  ),
-                ),
-              ),
-            ),
-            displaySongs(topGlobalSongs),
+          //Top Global
+          sectionTitle("Top Global"),
+          displaySongs(topGlobal),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  'Top Indian songs',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF512D80),
-                  ),
-                ),
-              ),
-            ),
-            displaySongs(topIndianSongs),
+          //Top Indian
+          sectionTitle("Top Indian"),
+          displaySongs(topIndian),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  'Songs by Artist : ',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF512D80),
-                  ),
-                ),
-              ),
-            ),
+          // Arijit
+          sectionTitle("Arijit Singh"),
+          displaySongs(arijitSongs),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  'Arijit Singh',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 247, 247, 246),
-                  ),
-                ),
-              ),
-            ),
-            displaySongs(categoryFutures['arijit']!),
+          // Taylor Swift
+          sectionTitle("Taylor Swift"),
+          displaySongs(taylorSongs),
 
+          // Dua Lipa
+          sectionTitle("Dua Lipa"),
+          displaySongs(duaSongs),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  'Ed sheeren',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 247, 247, 246),
-                  ),
-                ),
-              ),
-            ),
-            displaySongs(categoryFutures['ed']!),
+          // Love Songs
+          sectionTitle("Love"),
+          displaySongs(loveSongs),
 
+          // Lofi
+          sectionTitle("Lofi"),
+          displaySongs(lofiSongs),
 
-            // ... other categories
-            const SizedBox(height: 20),
-          ],
-        ));
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 }

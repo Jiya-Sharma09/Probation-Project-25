@@ -1,25 +1,25 @@
-
-class Song{
-
-  String title;
-  String artistName;
-  String preview;
-  String image;
+class Song {
+  final String id;
+  final String title;
+  final String artist;
+  final String image;
+  final String url; // audio URL (mp3)
 
   Song({
-    required this.artistName,
-    required this.image,
+    required this.id,
     required this.title,
-    required this.preview
-    });
+    required this.artist,
+    required this.image,
+    required this.url,
+  });
 
-  factory Song.fromJson(Map<String,dynamic> teddy){
+  factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-    artistName: teddy['artist']['name'] ?? '', 
-    image: teddy['album']['cover'] ?? '', 
-    title: teddy['title'] ?? '', 
-    preview: teddy['preview'] ?? ''
+      id: json['_id'] ?? '',
+      title: json['title'] ?? '',
+      artist: json['artist'] ?? '',
+      image: json['image'] ?? '',
+      url: json['url'] ?? '',
     );
   }
-
 }

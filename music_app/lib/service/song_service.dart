@@ -1,70 +1,60 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:music_app/models/song_model.dart';
-import 'api_config.dart';
+import 'package:music_app/service/api_config.dart';
+import 'package:music_app/dummy_data.dart';
+
+
 
 class ApiService {
-  final baseUrl = ApiConfig.deezerBaseUrl;
-  // all the following functions are written in accordance with a base url that i will later change in the main api_config.dart file
+  final baseUrl = ApiConfig.activeBaseUrl;  
+  // example: https://loginsignup-2.onrender.com
 
-  // to fetch songs form the external open database uisng api key
-  // api service mein pehele we need an api we use convert
-
-  Future<List<Song>> fetchSong(String querry) async {
-    // when i get url from the exernal url for fetching the songs enter it here :
+  // ✅ Fetch ALL songs
+  Future<List<Song>> fetchAllSongs() async {
+    // ✅ Use dummy data if toggle is enabled
+    if (ApiConfig.useDummyData) {
+      return dummySongs;
+    }
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/search?q=$querry&index=0'));
+      final response = await http.get(Uri.parse('$baseUrl/api/songs'));
 
       if (response.statusCode == 200) {
-        // response body : response.body will contain a list of maps each individual map contains a song
-        final data = jsonDecode(response.body)['data'];
-
-        return List<Song>.from(data.map((song) => Song.fromJson(song)));
-
+        final List data = jsonDecode(response.body);
+        return data.map((json) => Song.fromJson(json)).toList();
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("couldn't load songs !");
+      throw Exception("Error fetching songs: $e");
     }
   }
 
-  // now for fetchng top global songs for homescreen
-
-  Future<List<Song>> fetchTopGlobalSong() async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/chart/0/tracks'));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'];
-        return List<Song>.from(data.map((song) => Song.fromJson(song)));
-
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("an unexpected error occured !");
+  // ✅ SEARCH songs by query
+  Future<List<Song>> searchSongs(String query) async {
+    if (ApiConfig.useDummyData) {
+      // filter dummy songs
+      return dummySongs
+          .where((song) =>
+              song.title.toLowerCase().contains(query.toLowerCase()) ||
+              song.artist.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     }
-  }
-
-  // now for fetching top indian songs
-
-  Future<List<Song>> fetchTopIndianSong() async {
-    // when i get url from the exernal url for fetching the songs enter it here :
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/chart/110/tracks'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/songs?search=$query'),
+      );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'];
-        return List<Song>.from(data.map((song) => Song.fromJson(song)));
-
+        final List data = jsonDecode(response.body);
+        return data.map((json) => Song.fromJson(json)).toList();
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("an unexpected error occured !");
+      throw Exception("Error searching songs: $e");
     }
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'profile.dart';
 import 'user_library.dart';
+import 'main_app_bar.dart';
+import 'settings_screen.dart';
 
 class PageStruct extends StatefulWidget {
   @override
@@ -23,9 +25,13 @@ class _PageStructState extends State<PageStruct> {
   Widget build(BuildContext context) {
     return Scaffold(
 backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(129, 12, 0, 0),
-      ),
+      appBar: MainAppBar(title: 'Kadence', onSettingsTap: () {
+      // Navigate anywhere
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SettingsScreen()),
+      );
+    },),
 
       body: _pageList[selectedIndex],
       

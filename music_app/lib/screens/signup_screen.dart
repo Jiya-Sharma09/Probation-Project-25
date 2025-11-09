@@ -132,7 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: ElevatedButton(
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
-                              const Color.fromARGB(255, 174, 135, 26),
+                              const Color(0xFF512D80),
                             ),
                           ),
                           onPressed: signupUser,
