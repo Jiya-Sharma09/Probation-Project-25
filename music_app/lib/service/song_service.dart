@@ -74,4 +74,17 @@ class ApiService {
       throw Exception("Error fetching wishlist: $e");
     }
   }
+
+  Future<bool> removeFromWishlist(String songId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString("token");
+
+  final res = await http.delete(
+    Uri.parse("$baseUrl/api/wishlist/remove/$songId"),
+    headers: {"Authorization": "Bearer $token"},
+  );
+
+  return res.statusCode == 200;
+}
+
 }

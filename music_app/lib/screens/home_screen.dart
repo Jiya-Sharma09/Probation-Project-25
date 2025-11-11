@@ -12,11 +12,11 @@ class homeScreen extends StatefulWidget {
 
 class _homeScreenState extends State<homeScreen> {
   late Future<List<Song>> allSongs;
+  late Future<List<Song>> alansongs;
+  late Future<List<Song>> honeysinghSongs;
+  late Future<List<Song>> sabrinaSongs;
   late Future<List<Song>> taylorSongs;
   late Future<List<Song>> arijitSongs;
-  late Future<List<Song>> sabrinaSongs;
-  late Future<List<Song>> lofiSongs;
-  late Future<List<Song>> loveSongs;
 
   final TextEditingController searchController = TextEditingController();
   Future<List<Song>>? searchResults;
@@ -28,11 +28,11 @@ class _homeScreenState extends State<homeScreen> {
     final api = ApiService();
 
     allSongs = api.fetchAllSongs();
-    taylorSongs = api.searchSongs("taylor swift");
-    arijitSongs = api.searchSongs("arijit singh");
+    alansongs = api.searchSongs("alan");
+    honeysinghSongs = api.searchSongs("honey singh");
     sabrinaSongs = api.searchSongs("sabrina carpenter");
-    lofiSongs = api.searchSongs("lofi");
-    loveSongs = api.searchSongs("love");
+    taylorSongs = api.searchSongs("talor");
+    arijitSongs = api.searchSongs("arijit");
   }
 
   void _onSearchChanged(String value) {
@@ -139,7 +139,7 @@ class _homeScreenState extends State<homeScreen> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF512D80),
+            color: Color.fromARGB(255, 124, 84, 176),
           ),
         ),
       ),
@@ -182,20 +182,21 @@ class _homeScreenState extends State<homeScreen> {
           sectionTitle("All Songs"),
           songScroller(allSongs),
 
+          sectionTitle("Alan Walker"),
+          songScroller(alansongs),
+
+          sectionTitle("Honey Singh"),
+          songScroller(honeysinghSongs),
+
+          sectionTitle("Sabrina Carpenter"),
+          songScroller(sabrinaSongs),
+
           sectionTitle("Taylor Swift"),
           songScroller(taylorSongs),
 
           sectionTitle("Arijit Singh"),
           songScroller(arijitSongs),
 
-          sectionTitle("Sabrina Carpenter"),
-          songScroller(sabrinaSongs),
-
-          sectionTitle("Love"),
-          songScroller(loveSongs),
-
-          sectionTitle("Lofi"),
-          songScroller(lofiSongs),
 
           const SizedBox(height: 20),
         ],
