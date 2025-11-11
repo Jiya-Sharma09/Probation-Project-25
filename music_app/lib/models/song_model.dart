@@ -1,11 +1,9 @@
-import 'package:music_app/service/api_config.dart';
-
 class Song {
   final String id;
   final String title;
   final String artist;
-  final String image;
-  final String url;
+  final String image;   // FULL image URL
+  final String url;     // FULL audio URL
 
   Song({
     required this.id,
@@ -16,21 +14,30 @@ class Song {
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
-    final base = ApiConfig.activeBaseUrl;
+    const String base = "https://loginsignup-2.onrender.com";
+
+    // ✅ FIX IMAGE URL
+    String imagePath = json["imagePath"] ?? "";
+    if (imagePath.startsWith("http")) {
+      // Already full Cloudinary URL
+    } else {
+      imagePath = "$base$imagePath";
+    }
+
+    // ✅ FIX AUDIO URL
+    String audioUrl = json["audioUrl"] ?? "";
+    if (audioUrl.startsWith("http")) {
+      // Already full URL
+    } else {
+      audioUrl = "$base$audioUrl";
+    }
 
     return Song(
-      id: json['id']?.toString() ?? '',
-      title: json['title'] ?? '',
-      artist: json['artist'] ?? '',
-
-      image: json['imagePath'] != null
-          ? "$base${json['imagePath']}"
-          : "https://via.placeholder.com/200",
-
-      // backend sends audioPath or url
-      url: json['audioUrl'] != null
-          ? "$base${json['audioUrl']}"
-          : "",
+      id: json["id"]?.toString() ?? "",
+      title: json["title"] ?? "",
+      artist: json["artist"] ?? "",
+      image: imagePath,
+      url: audioUrl,
     );
   }
 }

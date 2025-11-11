@@ -19,13 +19,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
 
-  // ✅ Add To Wishlist
+  // ✅ Add to wishlist
   Future<void> addToWishlist() async {
     final songId = widget.song.id;
     final url = "${ApiConfig.activeBaseUrl}/api/wishlist/add/$songId";
 
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("token"); // ✅ Correct key
+    final token = prefs.getString("token");
 
     if (token == null) {
       ScaffoldMessenger.of(context)
@@ -62,11 +62,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     _initializePlayer();
   }
 
-  // ✅ Initialize Audio Player
+  // ✅ ✅ LOAD AUDIO CORRECTLY
   Future<void> _initializePlayer() async {
     try {
-      final audioUrl = widget.song.url; // ✅ Already full Cloudinary URL
-      await _player.setUrl(audioUrl);
+      final audioUrl = widget.song.url.trim(); // Cloudinary full URL
+
+      if (audioUrl.isEmpty) {
+        print("❌ ERROR: song.url is EMPTY");
+        return;
+      }
+
+      print("🎵 Loading audio: $audioUrl");
+
+      await _player.setUrl(audioUrl); // ✅ Works with HTTPS Cloudinary URLs
+      _player.play(); // ✅ Autoplay
 
       _player.durationStream.listen((d) {
         if (d != null) setState(() => _duration = d);
@@ -76,7 +85,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         setState(() => _position = p);
       });
     } catch (e) {
-      print("Audio load error: $e");
+      print("❌ Audio load error: $e");
     }
   }
 
@@ -96,9 +105,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     final song = widget.song;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 43, 43, 43),
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(song.title, style: const TextStyle(color: Color(0xFF512D80))),
+        title: Text(
+          song.title,
+          style: const TextStyle(color: Color(0xFF512D80)),
+        ),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Color(0xFF512D80)),
         actions: [
@@ -127,7 +139,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 25),
 
-            // ✅ Song Title
+            // ✅ Title
             Text(
               song.title,
               style: const TextStyle(
@@ -146,7 +158,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 30),
 
-            // ✅ Music Slider
+            // ✅ Slider
             Slider(
               min: 0,
               max: _duration.inSeconds.toDouble(),
