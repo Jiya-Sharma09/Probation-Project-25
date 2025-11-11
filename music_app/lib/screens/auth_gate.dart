@@ -6,8 +6,7 @@ import 'login_screen.dart';
 class AuthGate extends StatelessWidget {
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    return token != null; // true if user has a stored JWT
+    return prefs.getString("token") != null;
   }
 
   @override
@@ -15,13 +14,13 @@ class AuthGate extends StatelessWidget {
     return FutureBuilder<bool>(
       future: isLoggedIn(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.data == true) {
-          return PageStruct();
-        } else {
-          return LoginScreen();
+        if (!snapshot.hasData) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
+
+        return snapshot.data! ? PageStruct() : LoginScreen();
       },
     );
   }

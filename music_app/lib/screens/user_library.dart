@@ -78,7 +78,7 @@ class _UserLibraryScreenState extends State<UserLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(227, 36, 36, 36),
       body: FutureBuilder<List<Song>>(
         future: wishlistFuture,
         builder: (context, snapshot) {

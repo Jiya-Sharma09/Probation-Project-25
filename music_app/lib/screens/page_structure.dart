@@ -24,8 +24,8 @@ class _PageStructState extends State<PageStruct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-backgroundColor: Color.fromARGB(0, 0, 0, 0),
-      appBar: MainAppBar(title: 'Kadence', onSettingsTap: () {
+backgroundColor: Color.fromARGB(224, 54, 52, 52),
+      appBar: MainAppBar(title: 'Muziko', onSettingsTap: () {
       // Navigate anywhere
       Navigator.push(
         context,
@@ -37,7 +37,7 @@ backgroundColor: Color.fromARGB(0, 0, 0, 0),
       
 
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(255, 42, 41, 41),
+        backgroundColor: Color.fromARGB(81, 66, 65, 65),
 
         selectedItemColor: Color(0xFF512D80),
         unselectedItemColor: Color.fromARGB(255, 255, 255, 255),

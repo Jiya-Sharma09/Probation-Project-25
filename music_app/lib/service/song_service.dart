@@ -3,76 +3,67 @@ import 'package:http/http.dart' as http;
 import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/api_config.dart';
 import 'package:music_app/dummy_data.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final baseUrl = ApiConfig.activeBaseUrl;  
-  // example: https://loginsignup-2.onrender.com
+  final baseUrl = ApiConfig.activeBaseUrl;
 
-  // ✅ Fetch ALL songs
+  // ✅ Fetch all songs
   Future<List<Song>> fetchAllSongs() async {
-    // ✅ Use dummy data if toggle is enabled
-    if (ApiConfig.useDummyData) {
-      return dummySongs;
-    }
+    if (ApiConfig.useDummyData) return dummySongs;
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/songs'));
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
-        return data.map((json) => Song.fromJson(json)).toList();
-      } else {
-        return [];
+      final res = await http.get(Uri.parse("$baseUrl/api/songs"));
+      if (res.statusCode == 200) {
+        final List data = jsonDecode(res.body);
+        return data.map((e) => Song.fromJson(e)).toList();
       }
+      return [];
     } catch (e) {
       throw Exception("Error fetching songs: $e");
     }
   }
 
-  // ✅ SEARCH songs by query
+  // ✅ Search songs
   Future<List<Song>> searchSongs(String query) async {
     if (ApiConfig.useDummyData) {
-      // filter dummy songs
       return dummySongs
-          .where((song) =>
-              song.title.toLowerCase().contains(query.toLowerCase()) ||
-              song.artist.toLowerCase().contains(query.toLowerCase()))
+          .where((s) =>
+              s.title.toLowerCase().contains(query.toLowerCase()) ||
+              s.artist.toLowerCase().contains(query.toLowerCase()))
           .toList();
     }
 
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/songs?search=$query'),
-      );
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
-        return data.map((json) => Song.fromJson(json)).toList();
-      } else {
-        return [];
+      final res = await http.get(Uri.parse("$baseUrl/api/songs?search=$query"));
+      if (res.statusCode == 200) {
+        final List data = jsonDecode(res.body);
+        return data.map((e) => Song.fromJson(e)).toList();
       }
+      return [];
     } catch (e) {
       throw Exception("Error searching songs: $e");
     }
   }
 
+  // ✅ Fetch wishlist
+  Future<List<Song>> getWishlist() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
 
-  // ✅ Get user's wishlist (Array of songs)
-Future<List<Song>> getWishlist() async {
-  try {
-    final response = await http.get(Uri.parse('$baseUrl/api/wishlist'));
+    try {
+      final res = await http.get(
+        Uri.parse("$baseUrl/api/wishlist"),
+        headers: {"Authorization": "Bearer $token"},
+      );
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((json) => Song.fromJson(json)).toList();
-    } else {
+      if (res.statusCode == 200) {
+        final List data = jsonDecode(res.body);
+        return data.map((e) => Song.fromJson(e)).toList();
+      }
       return [];
+    } catch (e) {
+      throw Exception("Error fetching wishlist: $e");
     }
-  } catch (e) {
-    throw Exception("Error fetching wishlist: $e");
   }
-}
-
 }

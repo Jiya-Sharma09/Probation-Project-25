@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'page_structure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_screen.dart';
+import 'package:music_app/service/api_config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,80 +18,70 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
 
-  bool _isLoading = false; 
+  bool _isLoading = false;
 
-  Future<void> loginUser(
-    BuildContext context,
-    String email,
-    String password,
-  ) async {
+  Future<void> loginUser() async {
+    if (!_loginFormKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
     try {
       final response = await http.post(
-        Uri.parse('https://loginsignup-2.onrender.com/api/auth/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
+        Uri.parse("${ApiConfig.activeBaseUrl}/api/auth/login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": _emailController.text.trim(),
+          "password": _passwordController.text.trim(),
+        }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        final token = data["token"];
 
-        final token = data['token'];
         if (token != null) {
-          Map<String, dynamic> decodedToken = _decodeJWT(token);
-          print('Decoded token: $decodedToken');
-
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', token);
+          await prefs.setString("token", token);
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => PageStruct()),
+            MaterialPageRoute(builder: (_) => PageStruct()),
           );
         } else {
-          _showError(context, 'Token missing in response');
+          _showError("Token missing in response");
         }
       } else {
-        _showError(context, 'Invalid credentials or server error');
+        _showError("Invalid credentials");
       }
     } catch (e) {
-      _showError(context, 'Error: $e');
+      _showError("Error: $e");
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-  Map<String, dynamic> _decodeJWT(String token) {
-    final parts = token.split('.');
-    if (parts.length != 3) {
-      throw Exception('Invalid token');
-    }
-    final payload = utf8.decode(
-      base64Url.decode(base64Url.normalize(parts[1])),
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
-    return jsonDecode(payload);
-  }
-
-  void _showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(215, 0, 0, 0),
-      
+      backgroundColor: const Color.fromARGB(227, 36, 36, 36),
       body: Center(
         child: SingleChildScrollView(
           child: Form(
             key: _loginFormKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   height: 50,
                   child: Center(
                     child: Text(
-                      'Kadence',
+                      'Muziko',
                       style: TextStyle(
                         fontFamily: 'Playfair',
                         fontSize: 40,
@@ -102,28 +93,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 30),
 
-                // email field
+                // email
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 250, 248, 248)
-                    ),
+                    controller: _emailController,
+                    style: TextStyle(color: Colors.white),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a valid email.';
+                        return 'Please enter your email.';
                       }
                       return null;
                     },
-                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'email',
+                      hintStyle: TextStyle(color: Colors.white54),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Color(0xFF512D80),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
@@ -131,28 +117,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 10),
 
-                // password field
+                // password
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 250, 248, 248)
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a valid password.';
-                      }
-                      return null;
-                    },
                     controller: _passwordController,
+                    obscureText: true,
+                    style: TextStyle(color: Colors.white),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Please enter your password.' : null,
                     decoration: InputDecoration(
                       hintText: 'password',
+                      hintStyle: TextStyle(color: Colors.white54),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Color(0xFF512D80),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
@@ -160,49 +138,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 20),
 
-
-              // login button : 
-                
-                Center(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 1 / 3,
-                    child: ElevatedButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () async {
-                              // if (_loginFormKey.currentState!.validate()) {
-                              //   setState(() => _isLoading = true);
-                              //   await loginUser(
-                              //     context,
-                              //     _emailController.text.trim(),
-                              //     _passwordController.text.trim(),
-                              //   );
-                              //   setState(() => _isLoading = false);
-                              // }
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>PageStruct()));
-                            },
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                          Color(0xFF512D80)
-                        ),
-                      ),
-                      child: _isLoading
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'login ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 245, 243, 243),
-                              ),
-                            ),
+                // ✅ login button using real API
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 1 / 3,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : loginUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF512D80),
                     ),
+                    child: _isLoading
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            "login",
+                            style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
                   ),
                 ),
 
@@ -212,10 +169,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                      MaterialPageRoute(builder: (_) => SignupScreen()),
                     );
                   },
-                  child: Text("Don't have an account ? sign up "),
+                  child: Text("Don't have an account? Sign up"),
                 ),
               ],
             ),

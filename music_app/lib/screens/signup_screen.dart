@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:music_app/service/user_api.dart';
-import 'package:music_app/models/user_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:music_app/service/api_config.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -16,35 +18,47 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
+  // ✅ NEW: Direct API call (no user_api.dart needed)
   Future<void> signupUser() async {
     if (!_signUPkey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
+    final url = "${ApiConfig.activeBaseUrl}/api/auth/signup";
+
     try {
-      User? user = await ApiServiceUser().signup(
-        _usernameController.text,
-        _emailController.text,
-        _passwordController.text,
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "username": _usernameController.text.trim(),
+          "email": _emailController.text.trim(),
+          "password": _passwordController.text.trim(),
+        }),
       );
 
-      if (user != null) {
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // ✅ Show success
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Signup successful! Welcome ${user.username}'),
+            content: Text("Signup successful! Please login."),
           ),
         );
 
-        //  Navigate to login screen or home after signup
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data["message"] ?? "Signup failed")),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error: $e")));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -53,7 +67,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(228, 0, 0, 0),
+      backgroundColor: const Color.fromARGB(227, 36, 36, 36),
       body: Center(
         child: SingleChildScrollView(
           child: Form(
@@ -65,15 +79,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 250, 248, 248)
-                    ),
+                    style: const TextStyle(color: Colors.white),
                     controller: _usernameController,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Enter your username!'
-                        : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Enter username" : null,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your username',
+                      hintText: "Enter your username",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -86,15 +97,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 250, 248, 248)
-                    ),
+                    style: const TextStyle(color: Colors.white),
                     controller: _emailController,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Enter a valid email!'
-                        : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Enter email" : null,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your email',
+                      hintText: "Enter your email",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -107,16 +115,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 2 / 3,
                   child: TextFormField(
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 250, 248, 248)
-                    ),
+                    style: const TextStyle(color: Colors.white),
                     controller: _passwordController,
                     obscureText: true,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Enter your password!'
-                        : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Enter password" : null,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your password',
+                      hintText: "Enter your password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -128,20 +133,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 // Signup Button
                 _isLoading
                     ? const CircularProgressIndicator()
-                    : SizedBox(
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              const Color(0xFF512D80),
-                            ),
+                    : ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            const Color(0xFF512D80),
                           ),
-                          onPressed: signupUser,
-                          child: const Text(
-                            'Sign up',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                        ),
+                        onPressed: signupUser,
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                       ),

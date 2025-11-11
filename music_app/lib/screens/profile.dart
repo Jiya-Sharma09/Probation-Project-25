@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:music_app/models/user_model.dart';
 import 'login_screen.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -13,50 +11,39 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late Future<User?> userFuture;
-
-  final String baseUrl = "https://loginsignup-2.onrender.com";
+  String userId = "";
 
   @override
   void initState() {
     super.initState();
-    userFuture = fetchUserProfile();
+    loadUserId();
   }
 
-  // Fetch Logged-in User Profile
-  Future<User?> fetchUserProfile() async {
+  Future<void> loadUserId() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
 
-    if (token == null) return null;
-
-    final url = Uri.parse("$baseUrl/api/auth/me");
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return User.fromJson(data["user"]);
-      } else {
-        return null;
-      }
-    } catch (e) {
-      debugPrint("Profile error: $e");
-      return null;
+    if (token != null) {
+      final decoded = decodeJWT(token);
+      setState(() {
+        userId = decoded["_id"] ?? "Unknown ID";
+      });
     }
   }
 
-  // Logout Function (Deletes Token + Navigates to Login)
+  Map<String, dynamic> decodeJWT(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      return {};
+    }
+
+    final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+    return jsonDecode(payload);
+  }
+
   Future<void> logoutUser() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove("token"); // delete stored token
+    await prefs.clear();
 
     Navigator.pushAndRemoveUntil(
       context,
@@ -68,71 +55,47 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: FutureBuilder<User?>(
-        future: userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(
-              color: Color(0xFF512D80),
-            );
-          }
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.person_2_rounded,
+            size: 100,
+            color: Color(0xFF512D80),
+          ),
 
-          if (!snapshot.hasData || snapshot.data == null) {
-            return const Text(
-              "No user data found",
-              style: TextStyle(color: Colors.white),
-            );
-          }
+          const SizedBox(height: 20),
 
-          final user = snapshot.data!;
+          Text(
+            "User ID:",
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+          ),
 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.person_2_rounded,
-                size: 100,
-                color: Color(0xFF512D80),
-              ),
+          const SizedBox(height: 5),
 
-              const SizedBox(height: 20),
+          Text(
+            userId,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
 
-              Text(
-                user.username,
-                style: const TextStyle(
-                  fontSize: 22,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          const SizedBox(height: 40),
 
-              const SizedBox(height: 10),
-
-              Text(
-                user.email,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              ElevatedButton(
-                onPressed: logoutUser,
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    const Color(0xFF512D80),
-                  ),
-                ),
-                child: const Text(
-                  "Logout",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ],
-          );
-        },
+          ElevatedButton(
+            onPressed: logoutUser,
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all(Color(0xFF512D80)),
+            ),
+            child: const Text(
+              "Logout",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ],
       ),
     );
   }

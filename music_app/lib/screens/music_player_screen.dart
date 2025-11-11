@@ -19,40 +19,39 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
 
+  // ✅ Add To Wishlist
   Future<void> addToWishlist() async {
     final songId = widget.song.id;
-    final url = "${ApiConfig.activeBaseUrl}/wishlist/add/$songId";
+    final url = "${ApiConfig.activeBaseUrl}/api/wishlist/add/$songId";
 
-    // Read JWT token
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("authToken");
+    final token = prefs.getString("token"); // ✅ Correct key
 
     if (token == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please log in first")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Please log in first")));
       return;
     }
 
     try {
-      final response = await http.post(
+      final res = await http.post(
         Uri.parse(url),
         headers: {"Authorization": "Bearer $token"},
       );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Added to liked songs")));
+      if (res.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Added to liked songs")),
+        );
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Failed: ${response.body}")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed: ${res.body}")),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     }
   }
 
@@ -63,11 +62,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     _initializePlayer();
   }
 
+  // ✅ Initialize Audio Player
   Future<void> _initializePlayer() async {
     try {
-      // ✅ NEW: Build complete audio URL
-      final audioUrl = "${ApiConfig.activeBaseUrl}${widget.song.url}";
-
+      final audioUrl = widget.song.url; // ✅ Already full Cloudinary URL
       await _player.setUrl(audioUrl);
 
       _player.durationStream.listen((d) {
@@ -98,9 +96,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     final song = widget.song;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 43, 43, 43),
       appBar: AppBar(
-        title: Text(song.title, style: TextStyle(color: Color(0xFF512D80))),
+        title: Text(song.title, style: const TextStyle(color: Color(0xFF512D80))),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Color(0xFF512D80)),
         actions: [
@@ -116,6 +114,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // ✅ Song Image
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
@@ -128,6 +127,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 25),
 
+            // ✅ Song Title
             Text(
               song.title,
               style: const TextStyle(
@@ -138,6 +138,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
               textAlign: TextAlign.center,
             ),
 
+            // ✅ Artist
             Text(
               song.artist,
               style: const TextStyle(fontSize: 16, color: Colors.grey),
@@ -145,13 +146,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
             const SizedBox(height: 30),
 
+            // ✅ Music Slider
             Slider(
               min: 0,
               max: _duration.inSeconds.toDouble(),
-              value: _position.inSeconds
-                  .clamp(0, _duration.inSeconds)
-                  .toDouble(),
-              activeColor: Color(0xFF512D80),
+              value: _position.inSeconds.clamp(0, _duration.inSeconds).toDouble(),
+              activeColor: const Color(0xFF512D80),
               inactiveColor: Colors.grey,
               onChanged: (value) {
                 _player.seek(Duration(seconds: value.toInt()));
@@ -161,19 +161,14 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  formatTime(_position),
-                  style: TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  formatTime(_duration),
-                  style: TextStyle(color: Colors.grey),
-                ),
+                Text(formatTime(_position), style: const TextStyle(color: Colors.grey)),
+                Text(formatTime(_duration), style: const TextStyle(color: Colors.grey)),
               ],
             ),
 
             const SizedBox(height: 30),
 
+            // ✅ Play / Pause Button
             StreamBuilder<PlayerState>(
               stream: _player.playerStateStream,
               builder: (context, snapshot) {
@@ -181,10 +176,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
                 return IconButton(
                   iconSize: 60,
-                  color: Color(0xFF512D80),
-                  icon: Icon(
-                    isPlaying ? Icons.pause_circle : Icons.play_circle,
-                  ),
+                  color: const Color(0xFF512D80),
+                  icon: Icon(isPlaying ? Icons.pause_circle : Icons.play_circle),
                   onPressed: () {
                     isPlaying ? _player.pause() : _player.play();
                   },

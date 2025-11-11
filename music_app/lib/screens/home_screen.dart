@@ -40,13 +40,11 @@ class _homeScreenState extends State<homeScreen> {
       setState(() => searchResults = null);
       return;
     }
-
     setState(() {
       searchResults = ApiService().searchSongs(value);
     });
   }
 
-  // ✅ Reusable Horizontal Scroller
   Widget songScroller(Future<List<Song>> future) {
     return SizedBox(
       height: 190,
@@ -87,13 +85,12 @@ class _homeScreenState extends State<homeScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Song Image
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
@@ -109,26 +106,18 @@ class _homeScreenState extends State<homeScreen> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
-                      // Song Title
                       Text(
                         s.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(color: Colors.white),
                       ),
-
-                      // Artist
                       Text(
                         s.artist,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ],
                   ),
@@ -163,7 +152,7 @@ class _homeScreenState extends State<homeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Updated Search Bar (rounded + matching tile bg)
+          // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
@@ -172,35 +161,24 @@ class _homeScreenState extends State<homeScreen> {
               decoration: InputDecoration(
                 hintText: 'Search',
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.08),
+                fillColor: Colors.white.withValues(alpha: 0.12),
                 prefixIcon: const Icon(Icons.search, color: Colors.white70),
                 hintStyle: const TextStyle(color: Colors.white70),
-
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF512D80)),
                 ),
               ),
               style: const TextStyle(color: Colors.white),
             ),
           ),
 
-          // ✅ Show search results if searching
           if (searchResults != null) ...[
             sectionTitle("Search Results"),
             songScroller(searchResults!),
             const SizedBox(height: 20),
           ],
 
-          // ✅ Original categories
           sectionTitle("All Songs"),
           songScroller(allSongs),
 

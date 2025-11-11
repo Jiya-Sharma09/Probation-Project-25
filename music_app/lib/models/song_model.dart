@@ -1,9 +1,11 @@
+import 'package:music_app/service/api_config.dart';
+
 class Song {
   final String id;
   final String title;
   final String artist;
-  final String image;   // full URL after combining base + imagePath
-  final String url;     // audio URL
+  final String image;
+  final String url;
 
   Song({
     required this.id,
@@ -14,21 +16,21 @@ class Song {
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
-    // Build full image URL
-    final base = "https://loginsignup-2.onrender.com";
+    final base = ApiConfig.activeBaseUrl;
 
     return Song(
-      id: json['id'] ?? '',
+      id: json['id']?.toString() ?? '',
       title: json['title'] ?? '',
       artist: json['artist'] ?? '',
-      
-      // Build image path correctly
+
       image: json['imagePath'] != null
-          ? base + json['imagePath']
+          ? "$base${json['imagePath']}"
           : "https://via.placeholder.com/200",
 
-      // Audio URL
-      url: json['audioUrl'] ?? '',
+      // backend sends audioPath or url
+      url: json['audioUrl'] != null
+          ? "$base${json['audioUrl']}"
+          : "",
     );
   }
 }
