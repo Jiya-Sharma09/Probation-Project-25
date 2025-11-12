@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback? onSettingsTap;
   final Color? color;
 
   const MainAppBar({
     super.key,
     required this.title,
-    required this.onSettingsTap,
     this.color,
   });
 
@@ -19,6 +17,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: color ?? const Color(0xFF7A43BF),
       centerTitle: true,
 
+      // ✅ Title only, no profile or settings icons
       title: Text(
         title,
         style: const TextStyle(
@@ -27,13 +26,6 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.settings, color: Colors.white),
-          onPressed: onSettingsTap,
-        ),
-      ],
     );
   }
 

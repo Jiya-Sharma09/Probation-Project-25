@@ -4,6 +4,7 @@ import 'package:music_app/service/song_service.dart';
 import 'music_player_screen.dart';
 import 'package:music_app/widgets/mini_player.dart';
 import 'package:music_app/service/audio_manager.dart';
+import 'category_screen.dart';
 
 class homeScreen extends StatefulWidget {
   const homeScreen({super.key});
@@ -33,7 +34,7 @@ class _homeScreenState extends State<homeScreen> {
     alansongs = api.searchSongs("alan");
     honeysinghSongs = api.searchSongs("honey singh");
     sabrinaSongs = api.searchSongs("sabrina carpenter");
-    taylorSongs = api.searchSongs("talor");
+    taylorSongs = api.searchSongs("taylor");
     arijitSongs = api.searchSongs("arijit");
   }
 
@@ -79,7 +80,6 @@ class _homeScreenState extends State<homeScreen> {
               return GestureDetector(
                 onTap: () {
                   AudioManager().playSong(s);
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -89,10 +89,7 @@ class _homeScreenState extends State<homeScreen> {
                 },
                 child: Container(
                   width: 140,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
-                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.18),
@@ -159,6 +156,105 @@ class _homeScreenState extends State<homeScreen> {
     );
   }
 
+  // ✅ New Explore section with soft gradient category tiles
+  Widget exploreCategories() {
+    final categories = [
+      {
+        "name": "English",
+        "gradient": const LinearGradient(
+          colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      },
+      {
+        "name": "Hindi",
+        "gradient": const LinearGradient(
+          colors: [Color(0xFFFF512F), Color(0xFFF09819)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      },
+      {
+        "name": "K-pop",
+        "gradient": const LinearGradient(
+          colors: [Color(0xFF00C6FF), Color(0xFF0072FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      },
+      {
+        "name": "Haryanvi",
+        "gradient": const LinearGradient(
+          colors: [Color(0xFF11998E), Color(0xFF38EF7D)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      },
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Explore by Categories",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 15),
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.6,
+            physics: const NeverScrollableScrollPhysics(),
+            children: categories.map((cat) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+builder: (_) => CategoryScreen(category: cat["name"] as String),
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: cat["gradient"] as LinearGradient,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      cat["name"] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -191,6 +287,9 @@ class _homeScreenState extends State<homeScreen> {
             songScroller(searchResults!),
             const SizedBox(height: 20),
           ],
+
+          // ✅ New Explore section
+          exploreCategories(),
 
           sectionTitle("All Songs"),
           songScroller(allSongs),

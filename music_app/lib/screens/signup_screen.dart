@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:music_app/service/api_config.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -18,7 +17,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
-  // ✅ NEW: Direct API call (no user_api.dart needed)
   Future<void> signupUser() async {
     if (!_signUPkey.currentState!.validate()) return;
 
@@ -40,16 +38,15 @@ class _SignupScreenState extends State<SignupScreen> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // ✅ Show success
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Signup successful! Please login."),
           ),
         );
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -66,100 +63,163 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 44, 43, 43),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _signUPkey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Username
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 2 / 3,
-                  child: TextFormField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: _usernameController,
-                    validator: (value) =>
-                        value == null || value.isEmpty ? "Enter username" : null,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your username",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
+    return Container(
+      // ✅ Same gradient as home page / page struct
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.15, 1.0],
+          colors: [
+            Color(0xFF7A43BF), // top glow
+            Color(0xFF512D80), // deep violet
+            Color(0xFF000000), // black
+          ],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _signUPkey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // ✅ Welcome message
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      "Sign up new user,\nWe're glad you are here!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
 
-                // Email
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 2 / 3,
-                  child: TextFormField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: _emailController,
-                    validator: (value) =>
-                        value == null || value.isEmpty ? "Enter email" : null,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your email",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Password
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 2 / 3,
-                  child: TextFormField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: _passwordController,
-                    obscureText: true,
-                    validator: (value) =>
-                        value == null || value.isEmpty ? "Enter password" : null,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your password",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Signup Button
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            const Color(0xFF512D80),
-                          ),
+                  // ✅ Username
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 2 / 3,
+                    child: TextFormField(
+                      style: const TextStyle(color: Colors.white),
+                      controller: _usernameController,
+                      validator: (value) => value == null || value.isEmpty
+                          ? "Enter username"
+                          : null,
+                      decoration: InputDecoration(
+                        hintText: "Username",
+                        hintStyle: const TextStyle(color: Colors.white70),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 1.2),
                         ),
-                        onPressed: signupUser,
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 0.8),
                         ),
                       ),
-                const SizedBox(height: 40),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
 
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
-                  },
-                  child: const Text("Have an account? Login"),
-                ),
-              ],
+                  // ✅ Email
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 2 / 3,
+                    child: TextFormField(
+                      style: const TextStyle(color: Colors.white),
+                      controller: _emailController,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? "Enter email" : null,
+                      decoration: InputDecoration(
+                        hintText: "Email",
+                        hintStyle: const TextStyle(color: Colors.white70),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 1.2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 0.8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // ✅ Password
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 2 / 3,
+                    child: TextFormField(
+                      style: const TextStyle(color: Colors.white),
+                      controller: _passwordController,
+                      obscureText: true,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? "Enter password" : null,
+                      decoration: InputDecoration(
+                        hintText: "Password",
+                        hintStyle: const TextStyle(color: Colors.white70),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 1.2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 0.8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // ✅ Signup button
+                  _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: signupUser,
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                  const SizedBox(height: 40),
+
+                  // ✅ Login link
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Have an account? Login",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
