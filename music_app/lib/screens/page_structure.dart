@@ -4,6 +4,7 @@ import 'profile.dart';
 import 'user_library.dart';
 import 'main_app_bar.dart';
 import 'settings_screen.dart';
+import 'package:music_app/widgets/mini_player.dart';
 
 class PageStruct extends StatefulWidget {
   @override
@@ -28,16 +29,20 @@ class _PageStructState extends State<PageStruct> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // ✅ Spotify-style luxury gradient background
+      // ✅ Gradient: 15% purple → 85% black 
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: [0.0, 0.3, 1.0],
+          stops: [
+            0.0,
+            0.15, // only 15% gradient
+            1.0   // rest fully black
+          ],
           colors: [
-            Color(0xFF7A43BF), // top glow
-            Color(0xFF512D80), // deep purple
-            Color(0xFF000000), // black
+            Color(0xFF7A43BF), // subtle glow at very top
+            Color(0xFF512D80), // dark violet fade
+            Color(0xFF000000), // BLACK for 85% of screen
           ],
         ),
       ),
@@ -45,24 +50,29 @@ class _PageStructState extends State<PageStruct> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
 
-        // ✅ FIXED AppBar that blends perfectly
-        appBar: MainAppBar(
+        // ✅ App bar color = same as top of gradient
+        appBar: const MainAppBar(
           title: 'Muziko',
-          onSettingsTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => SettingsScreen()),
-            );
-          },
-          color: const Color(0xFF7A43BF), // ✅ SAME AS top gradient color
+          onSettingsTap: null,
+          color: Color(0xFF7A43BF), // blends perfectly
         ),
 
-        body: _pageList[selectedIndex],
+        body: Stack(
+          children: [
+            Positioned.fill(child: _pageList[selectedIndex]),
+
+            // ✅ Mini Player above bottom nav
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 65,
+              child: MiniPlayer(),
+            ),
+          ],
+        ),
 
         bottomNavigationBar: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black87,
-          ),
+          decoration: const BoxDecoration(color: Colors.black),
           child: BottomNavigationBar(
             backgroundColor: Colors.transparent,
             elevation: 0,

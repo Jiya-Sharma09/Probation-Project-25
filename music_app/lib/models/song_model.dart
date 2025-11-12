@@ -2,8 +2,8 @@ class Song {
   final String id;
   final String title;
   final String artist;
-  final String image;   // FULL image URL
-  final String url;     // FULL audio URL
+  final String image; // FULL image URL
+  final String url;   // FULL audio URL
 
   Song({
     required this.id,
@@ -16,19 +16,15 @@ class Song {
   factory Song.fromJson(Map<String, dynamic> json) {
     const String base = "https://loginsignup-2.onrender.com";
 
-    // ✅ FIX IMAGE URL
+    // ✅ Fix image URL
     String imagePath = json["imagePath"] ?? "";
-    if (imagePath.startsWith("http")) {
-      // Already full Cloudinary URL
-    } else {
+    if (!imagePath.startsWith("http")) {
       imagePath = "$base$imagePath";
     }
 
-    // ✅ FIX AUDIO URL
+    // ✅ Fix audio URL
     String audioUrl = json["audioUrl"] ?? "";
-    if (audioUrl.startsWith("http")) {
-      // Already full URL
-    } else {
+    if (!audioUrl.startsWith("http")) {
       audioUrl = "$base$audioUrl";
     }
 

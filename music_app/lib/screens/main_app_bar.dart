@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback onSettingsTap;
+  final VoidCallback? onSettingsTap;
   final Color? color;
 
   const MainAppBar({
@@ -16,7 +16,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: color ?? Colors.transparent,
+      backgroundColor: color ?? const Color(0xFF7A43BF),
       centerTitle: true,
 
       title: Text(

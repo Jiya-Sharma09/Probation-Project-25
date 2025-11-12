@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/song_service.dart';
 import 'music_player_screen.dart';
+import 'package:music_app/widgets/mini_player.dart';
+import 'package:music_app/service/audio_manager.dart';
 
 class homeScreen extends StatefulWidget {
   const homeScreen({super.key});
@@ -59,7 +61,10 @@ class _homeScreenState extends State<homeScreen> {
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-              child: Text("No songs found", style: TextStyle(color: Colors.white)),
+              child: Text(
+                "No songs found",
+                style: TextStyle(color: Colors.white),
+              ),
             );
           }
 
@@ -73,6 +78,8 @@ class _homeScreenState extends State<homeScreen> {
 
               return GestureDetector(
                 onTap: () {
+                  AudioManager().playSong(s);
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -82,7 +89,10 @@ class _homeScreenState extends State<homeScreen> {
                 },
                 child: Container(
                   width: 140,
-                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 10,
+                  ),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.18),
@@ -117,7 +127,10 @@ class _homeScreenState extends State<homeScreen> {
                         s.artist,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -139,7 +152,7 @@ class _homeScreenState extends State<homeScreen> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 124, 84, 176),
+            color: Color.fromARGB(255, 253, 253, 254),
           ),
         ),
       ),
@@ -196,7 +209,6 @@ class _homeScreenState extends State<homeScreen> {
 
           sectionTitle("Arijit Singh"),
           songScroller(arijitSongs),
-
 
           const SizedBox(height: 20),
         ],

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/api_config.dart';
 import 'package:music_app/dummy_data.dart';
@@ -9,25 +8,25 @@ import 'package:http/http.dart' as http;
 class ApiService {
   final baseUrl = ApiConfig.activeBaseUrl;
 
-  // ✅ Fetch ALL songs
+  // ✅ Fetch all songs
   Future<List<Song>> fetchAllSongs() async {
     if (ApiConfig.useDummyData) return dummySongs;
 
     try {
       final res = await http.get(Uri.parse("$baseUrl/api/songs"));
-
       if (res.statusCode == 200) {
         final List data = jsonDecode(res.body);
         return data.map((e) => Song.fromJson(e)).toList();
+      } else {
+        print("⚠️ fetchAllSongs failed: ${res.statusCode}");
+        return [];
       }
-
-      return [];
     } catch (e) {
       throw Exception("Error fetching songs: $e");
     }
   }
 
-  // ✅ SEARCH songs
+  // ✅ Search songs
   Future<List<Song>> searchSongs(String query) async {
     if (ApiConfig.useDummyData) {
       return dummySongs
@@ -38,25 +37,25 @@ class ApiService {
     }
 
     try {
-      final res = await http.get(
-        Uri.parse("$baseUrl/api/songs?search=$query"),
-      );
-
+      final res = await http.get(Uri.parse("$baseUrl/api/songs?search=$query"));
       if (res.statusCode == 200) {
         final List data = jsonDecode(res.body);
         return data.map((e) => Song.fromJson(e)).toList();
+      } else {
+        print("⚠️ searchSongs failed: ${res.statusCode}");
+        return [];
       }
-
-      return [];
     } catch (e) {
       throw Exception("Error searching songs: $e");
     }
   }
 
-  // ✅ Fetch user's wishlist
+  // ✅ Fetch wishlist
   Future<List<Song>> getWishlist() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
+
+    if (token == null) return [];
 
     try {
       final res = await http.get(
@@ -67,24 +66,31 @@ class ApiService {
       if (res.statusCode == 200) {
         final List data = jsonDecode(res.body);
         return data.map((e) => Song.fromJson(e)).toList();
+      } else {
+        print("⚠️ getWishlist failed: ${res.statusCode}");
+        return [];
       }
-
-      return [];
     } catch (e) {
       throw Exception("Error fetching wishlist: $e");
     }
   }
 
+  // ✅ Remove song from wishlist
   Future<bool> removeFromWishlist(String songId) async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString("token");
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
 
-  final res = await http.delete(
-    Uri.parse("$baseUrl/api/wishlist/remove/$songId"),
-    headers: {"Authorization": "Bearer $token"},
-  );
+    if (token == null) return false;
 
-  return res.statusCode == 200;
-}
-
+    try {
+      final res = await http.delete(
+        Uri.parse("$baseUrl/api/wishlist/remove/$songId"),
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      print("❌ Error removing song: $e");
+      return false;
+    }
+  }
 }

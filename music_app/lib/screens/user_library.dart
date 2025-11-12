@@ -3,6 +3,8 @@ import 'package:music_app/models/song_model.dart';
 import 'package:music_app/service/song_service.dart';
 import 'music_player_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:music_app/widgets/mini_player.dart';
+import 'package:music_app/service/audio_manager.dart';
 
 class UserLibraryScreen extends StatefulWidget {
   const UserLibraryScreen({super.key});
@@ -36,11 +38,9 @@ class _UserLibraryScreenState extends State<UserLibraryScreen> {
       wishlistFuture = ApiService().getWishlist();
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Removed from liked songs"),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Removed from liked songs")));
   }
 
   // ✅ SONG TILE WITH REMOVE BUTTON
@@ -56,11 +56,11 @@ class _UserLibraryScreenState extends State<UserLibraryScreen> {
           // ✅ Entire Card Clickable (Open Player)
           GestureDetector(
             onTap: () {
+              AudioManager().playSong(s);
+
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => MusicPlayerScreen(song: s),
-                ),
+                MaterialPageRoute(builder: (_) => MusicPlayerScreen(song: s)),
               );
             },
             child: Column(
@@ -68,8 +68,9 @@ class _UserLibraryScreenState extends State<UserLibraryScreen> {
               children: [
                 // ✅ Song image
                 ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(14)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(14),
+                  ),
                   child: Image.network(
                     s.image,
                     height: 140,
@@ -94,9 +95,10 @@ class _UserLibraryScreenState extends State<UserLibraryScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
